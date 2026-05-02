@@ -4,38 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة التخطيط الاستراتيجي</title>
-    <style>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+            /* Using a beautiful bright sunset / dawn gradient (vibrant pinkish/orange/yellow to soft blue) */
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            /* Actually, let's use a gorgeous "Starry bright sky" look */
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating stars animation */
+        .bg-stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star-icon {
+            position: absolute;
+            color: #fff;
+            animation: twinkle 4s infinite linear;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.4) rotate(180deg); }
+            100% { opacity: 0.2; transform: scale(0.8) rotate(360deg); }
         }
 
         .game-container {
             width: 100%;
-            max-width: 1200px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            /* Advanced Glassmorphism */
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             overflow: hidden;
+            position: relative;
+            z-index: 10;
         }
 
+        /* Unified Slide Style */
         .slide {
             display: none;
-            padding: 60px 40px;
-            min-height: 600px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            animation: slideIn 0.5s ease-in-out;
+            padding: 50px 40px;
+            min-height: 550px;
+            animation: slideIn 0.5s ease-out;
+            background: transparent !important; /* Unified! No more individual colors */
         }
 
         .slide.active {
@@ -46,85 +80,62 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Slide Backgrounds */
-        .slide-title {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        /* Compass Header for all questions */
+        .mini-compass {
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-left: 10px;
+            animation: little-spin 4s ease-in-out infinite alternate;
         }
-
-        .slide-team1 {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-        }
-
-        .slide-team2 {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
-
-        .slide-score {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        }
-
-        .slide-end {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        @keyframes little-spin {
+            from { transform: rotate(-20deg); }
+            to { transform: rotate(20deg); }
         }
 
         /* Title Slide */
-        .title-content {
-            text-align: center;
+        .title-content { text-align: center; }
+
+        .compass-glow {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.8));
+            animation: float-compass 3s ease-in-out infinite;
+        }
+        @keyframes float-compass {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(15deg); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); }
         }
 
         .title-content h1 {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 3.5rem;
+            color: #1a252f;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 5px rgba(255,255,255,0.5);
         }
 
         .teams-intro {
-            display: flex;
-            gap: 40px;
-            margin-top: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: flex; gap: 30px; margin-top: 40px; justify-content: center; flex-wrap: wrap;
         }
 
         .team-intro {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.7);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 20px;
             flex: 1;
             min-width: 250px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 2px solid rgba(255,255,255,0.8);
+            transition: transform 0.3s;
         }
-
-        .team-intro h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-
-        .team-intro.planning {
-            border-left: 5px solid #84fab0;
-            color: #1a7c4a;
-        }
-
-        .team-intro.risk {
-            border-left: 5px solid #fa709a;
-            color: #c23b5f;
-        }
-
-        .team-intro p {
-            font-size: 1rem;
-            line-height: 1.6;
-        }
+        .team-intro:hover { transform: translateY(-10px); }
+        .team-intro h2 { font-size: 1.6rem; margin-bottom: 10px; }
+        .team-intro.planning { color: #0277bd; }
+        .team-intro.risk { color: #c2185b; }
 
         /* Question Slide */
         .question-header {
@@ -133,272 +144,112 @@
             align-items: center;
             width: 100%;
             margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
-        .question-number {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
+        .question-number { font-size: 1.2rem; font-weight: 800; color: #34495e; }
+        
         .question-type {
-            font-size: 0.9rem;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.5);
+            font-size: 1rem; padding: 8px 20px; border-radius: 25px; font-weight: bold;
         }
+        .team1 .question-type { background: #e1f5fe; color: #0277bd; border: 1px solid #81d4fa; }
+        .team2 .question-type { background: #fce4ec; color: #c2185b; border: 1px solid #f48fb1; }
 
-        .team1 .question-type {
-            background: #84fab0;
-            color: #1a7c4a;
-        }
-
-        .team2 .question-type {
-            background: #fa709a;
-            color: white;
-        }
-
-        .question-content {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
+        .question-content { text-align: center; width: 100%; margin-bottom: 40px; }
         .question-content h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-            line-height: 1.4;
+            font-size: 2.2rem;
+            color: #1a252f;
+            line-height: 1.5;
+            text-shadow: 1px 1px 3px rgba(255,255,255,0.8);
         }
 
         .options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-            margin-top: 30px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
         }
 
         .option {
             padding: 20px;
-            background: white;
-            border: 3px solid #ddd;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid transparent;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #34495e;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .option:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            border-color: #667eea;
+            background: #fff;
+            border-color: #66A6FF;
+            box-shadow: 0 10px 20px rgba(102, 166, 255, 0.3);
         }
 
         .option.correct {
-            background: #84fab0;
-            border-color: #1a7c4a;
-            color: #1a7c4a;
+            background: #d4edda; border-color: #28a745; color: #155724;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
         }
 
-        .option.incorrect {
-            background: #ffcccc;
-            border-color: #c23b5f;
-            color: #c23b5f;
-        }
+        .option.incorrect { background: #f8dbdf; border-color: #dc3545; color: #721c24; }
 
-        /* Score Slide */
+        /* Score & Winner */
         .score-board {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px; border-radius: 20px; text-align: center; width: 100%;
         }
-
-        .score-board h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .scores {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-        }
-
-        .score-card {
-            text-align: center;
-            padding: 30px;
-            border-radius: 10px;
-            color: white;
-        }
-
-        .score-card.planning {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            color: #1a7c4a;
-        }
-
-        .score-card.risk {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: #c23b5f;
-        }
-
-        .score-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-
-        .score-value {
-            font-size: 3rem;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-
-        /* Winner Slide */
-        .winner-content {
-            text-align: center;
-        }
-
-        .winner-content h1 {
-            font-size: 3rem;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .winner-name {
-            font-size: 2.5rem;
-            color: #667eea;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .trophy {
-            font-size: 5rem;
-            margin: 30px 0;
-            animation: bounce 1s infinite;
-        }
+        .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        .score-card { padding: 30px; border-radius: 15px; background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .score-value { font-size: 4rem; font-weight: 800; color: #66a6ff; margin: 20px 0; }
+        
+        .trophy { font-size: 6rem; margin: 30px 0; animation: bounce 1.5s infinite; filter: drop-shadow(0 0 15px gold); }
+        .winner-name { font-size: 3rem; color: #0277bd; margin-bottom: 20px; font-weight: 900; }
 
         @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         /* Navigation */
         .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background: #f5f7fa;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; background: rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(255,255,255,0.6);
         }
-
         button {
-            padding: 12px 30px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
+            padding: 12px 35px; font-size: 1.2rem; border: none; border-radius: 10px;
+            cursor: pointer; transition: all 0.3s; font-weight: 800;
         }
+        .btn-prev { background: rgba(255,255,255,0.8); color: #34495e; }
+        .btn-prev:hover { background: white; }
+        .btn-next { background: linear-gradient(120deg, #66A6FF 0%, #89F7FE 100%); color: white; box-shadow: 0 4px 15px rgba(102,166,255,0.4); }
+        .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,166,255,0.6); }
+        .btn-next:disabled { background: #dcdcdc; color: #888; cursor: not-allowed; box-shadow: none; transform: none; }
+        .slide-counter { font-size: 1.2rem; font-weight: 800; color: #1a252f; }
 
-        .btn-prev {
-            background: #ddd;
-            color: #333;
-        }
-
-        .btn-prev:hover {
-            background: #ccc;
-        }
-
-        .btn-next {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-next:hover {
-            background: #764ba2;
-            transform: translateX(5px);
-        }
-
-        .btn-next:disabled {
-            background: #ddd;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .slide-counter {
-            color: #666;
-            font-weight: bold;
-        }
-
-        .team-indicator {
-            font-size: 1.1rem;
-            font-weight: bold;
-            padding: 8px 16px;
-            border-radius: 20px;
-        }
-
-        .team-indicator.planning {
-            background: #84fab0;
-            color: #1a7c4a;
-        }
-
-        .team-indicator.risk {
-            background: #fa709a;
-            color: white;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .slide {
-                padding: 40px 20px;
-                min-height: 500px;
-            }
-
-            .title-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .question-content h2 {
-                font-size: 1.5rem;
-            }
-
-            .teams-intro {
-                gap: 20px;
-            }
-
-            .options {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-buttons {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            button {
-                width: 100%;
-            }
+            .slide { padding: 30px 20px; min-height: 500px; }
+            .title-content h1 { font-size: 2.2rem; }
+            .question-content h2 { font-size: 1.5rem; }
+            .options { grid-template-columns: 1fr; }
+            .nav-buttons { flex-direction: column; gap: 15px; }
+            button { width: 100%; }
         }
     </style>
 </head>
 <body>
+    <div id="stars-container" class="bg-stars"></div>
     <div class="game-container">
         <!-- Slide 1: Title -->
         <div class="slide slide-title active">
             <div class="title-content">
-                <h1>🎮 لعبة التخطيط الاستراتيجي</h1>
+                <div class="compass-glow">🧭</div>
+                <h1>✨ لعبة التخطيط الاستراتيجي ✨</h1>
                 <p style="font-size: 1.3rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Strategic Planning Interactive Game</p>
                 <div class="teams-intro">
                     <div class="team-intro planning">
@@ -420,7 +271,7 @@
         <!-- Q1 -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 1 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 1 من 14</span>
                 <span class="question-type">فريق التخطيط</span>
             </div>
             <div class="question-content">
@@ -437,7 +288,7 @@
         <!-- Q2 -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 2 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 2 من 14</span>
                 <span class="question-type">فريق إدارة المخاطر</span>
             </div>
             <div class="question-content">
@@ -454,7 +305,7 @@
         <!-- Q3 -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 3 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 3 من 14</span>
                 <span class="question-type">فريق التخطيط</span>
             </div>
             <div class="question-content">
@@ -471,7 +322,7 @@
         <!-- Q4 -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 4 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 4 من 14</span>
                 <span class="question-type">فريق إدارة المخاطر</span>
             </div>
             <div class="question-content">
@@ -488,7 +339,7 @@
         <!-- Q5 -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 5 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 5 من 14</span>
                 <span class="question-type">فريق التخطيط</span>
             </div>
             <div class="question-content">
@@ -505,7 +356,7 @@
         <!-- Q6 -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 6 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 6 من 14</span>
                 <span class="question-type">فريق إدارة المخاطر</span>
             </div>
             <div class="question-content">
@@ -522,7 +373,7 @@
         <!-- Q7 -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 7 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 7 من 14</span>
                 <span class="question-type">فريق التخطيط</span>
             </div>
             <div class="question-content">
@@ -539,7 +390,7 @@
         <!-- Q8 -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 8 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 8 من 14</span>
                 <span class="question-type">فريق إدارة المخاطر</span>
             </div>
             <div class="question-content">
@@ -556,7 +407,7 @@
         <!-- Q9 -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 9 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 9 من 14</span>
                 <span class="question-type">فريق التخطيط</span>
             </div>
             <div class="question-content">
@@ -573,7 +424,7 @@
         <!-- Q10 -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 10 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 10 من 14</span>
                 <span class="question-type">فريق إدارة المخاطر</span>
             </div>
             <div class="question-content">
@@ -590,7 +441,7 @@
         <!-- Q11 - Cultural Question -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 11 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 11 من 14</span>
                 <span class="question-type">سؤال ثقافي 🌍</span>
             </div>
             <div class="question-content">
@@ -607,7 +458,7 @@
         <!-- Q12 - Funny Question -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 12 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 12 من 14</span>
                 <span class="question-type">سؤال فكاهي 😂</span>
             </div>
             <div class="question-content">
@@ -624,7 +475,7 @@
         <!-- Q13 - Cultural Question -->
         <div class="slide slide-team1">
             <div class="question-header team1">
-                <span class="question-number">السؤال 13 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 13 من 14</span>
                 <span class="question-type">سؤال ثقافي 🌍</span>
             </div>
             <div class="question-content">
@@ -641,7 +492,7 @@
         <!-- Q14 - Final Funny Question -->
         <div class="slide slide-team2">
             <div class="question-header team2">
-                <span class="question-number">السؤال 14 من 14</span>
+                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 14 من 14</span>
                 <span class="question-type">سؤال ختامي فكاهي 🎯</span>
             </div>
             <div class="question-content">
@@ -803,6 +654,21 @@
                     document.getElementById('winner-name').textContent = winnerName;
                 }, 500);
             }
+        }
+
+        
+        // Generate floating stars
+        const starsContainer = document.getElementById('stars-container');
+        const starIcons = ['⭐', '✨', '🌟'];
+        for (let i = 0; i < 30; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-icon';
+            star.textContent = starIcons[Math.floor(Math.random() * starIcons.length)];
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            starsContainer.appendChild(star);
         }
 
         // Initialize
