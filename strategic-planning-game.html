@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة التخطيط الاستراتيجي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px 40px;
+            min-height: 600px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Slide Backgrounds */
+        .slide-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .slide-team1 {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .slide-team2 {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .slide-score {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .slide-end {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        /* Title Slide */
+        .title-content {
+            text-align: center;
+        }
+
+        .title-content h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .teams-intro {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .team-intro {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 250px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-intro h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .team-intro.planning {
+            border-left: 5px solid #84fab0;
+            color: #1a7c4a;
+        }
+
+        .team-intro.risk {
+            border-left: 5px solid #fa709a;
+            color: #c23b5f;
+        }
+
+        .team-intro p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Question Slide */
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .question-type {
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .team1 .question-type {
+            background: #84fab0;
+            color: #1a7c4a;
+        }
+
+        .team2 .question-type {
+            background: #fa709a;
+            color: white;
+        }
+
+        .question-content {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .question-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .option {
+            padding: 20px;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #84fab0;
+            border-color: #1a7c4a;
+            color: #1a7c4a;
+        }
+
+        .option.incorrect {
+            background: #ffcccc;
+            border-color: #c23b5f;
+            color: #c23b5f;
+        }
+
+        /* Score Slide */
+        .score-board {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .score-board h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .scores {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .score-card.planning {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #1a7c4a;
+        }
+
+        .score-card.risk {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #c23b5f;
+        }
+
+        .score-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Winner Slide */
+        .winner-content {
+            text-align: center;
+        }
+
+        .winner-content h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .winner-name {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .trophy {
+            font-size: 5rem;
+            margin: 30px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #f5f7fa;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-prev {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-prev:hover {
+            background: #ccc;
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #764ba2;
+            transform: translateX(5px);
+        }
+
+        .btn-next:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .team-indicator {
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .team-indicator.planning {
+            background: #84fab0;
+            color: #1a7c4a;
+        }
+
+        .team-indicator.risk {
+            background: #fa709a;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+                min-height: 500px;
+            }
+
+            .title-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .question-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .teams-intro {
+                gap: 20px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-title active">
+            <div class="title-content">
+                <h1>🎮 لعبة التخطيط الاستراتيجي</h1>
+                <p style="font-size: 1.3rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Strategic Planning Interactive Game</p>
+                <div class="teams-intro">
+                    <div class="team-intro planning">
+                        <h2>🎯 فريق التخطيط</h2>
+                        <p>Planning Team</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">متخصصون في الرؤية المستقبلية والأهداف الاستراتيجية</p>
+                    </div>
+                    <div class="team-intro risk">
+                        <h2>🛡️ فريق إدارة المخاطر</h2>
+                        <p>Business Continuity & Risk Management</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">متخصصون في التعامل مع التحديات واستمرارية الأعمال</p>
+                    </div>
+                </div>
+                <p style="margin-top: 40px; font-size: 1.1rem;">14 أسئلة متنوعة • مجموع 14 نقطة</p>
+            </div>
+        </div>
+
+        <!-- Slide 2-15: Questions -->
+        <!-- Q1 -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 1 من 14</span>
+                <span class="question-type">فريق التخطيط</span>
+            </div>
+            <div class="question-content">
+                <h2>ما هو الهدف الأساسي من التخطيط الاستراتيجي؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">تحديد الاتجاه المستقبلي للمنظمة والموارد المطلوبة</div>
+                    <div class="option" onclick="selectOption(this, false)">إصدار التقارير الشهرية فقط</div>
+                    <div class="option" onclick="selectOption(this, false)">الإنفاق العشوائي على المشاريع</div>
+                    <div class="option" onclick="selectOption(this, false)">تقليل عدد الموظفين بسرعة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 2 من 14</span>
+                <span class="question-type">فريق إدارة المخاطر</span>
+            </div>
+            <div class="question-content">
+                <h2>كيف نتعامل مع تعطل نظام البيانات المركزي؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, false)">نأمل أن لا يحدث ❌</div>
+                    <div class="option" onclick="selectOption(this, true)">خطة طوارئ مسبقة + نسخ احتياطية + فريق استجابة جاهز</div>
+                    <div class="option" onclick="selectOption(this, false)">نستدعي الفني بعد الفوات 🤷</div>
+                    <div class="option" onclick="selectOption(this, false)">نغلق المكتب يوماً</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 3 من 14</span>
+                <span class="question-type">فريق التخطيط</span>
+            </div>
+            <div class="question-content">
+                <h2>أي من هذه هي مكونات خطة استراتيجية فعالة؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">الرؤية + الرسالة + الأهداف + الإجراءات</div>
+                    <div class="option" onclick="selectOption(this, false)">أحلام وطموحات عشوائية</div>
+                    <div class="option" onclick="selectOption(this, false)">فقط الميزانية</div>
+                    <div class="option" onclick="selectOption(this, false)">تقليد ما تفعله المنافسين</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 4 من 14</span>
+                <span class="question-type">فريق إدارة المخاطر</span>
+            </div>
+            <div class="question-content">
+                <h2>ما أفضل ممارسة لضمان استمرارية العمل؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">اختبار البدائل بانتظام وتحديث الخطط</div>
+                    <div class="option" onclick="selectOption(this, false)">كتابة الخطة ثم نسيانها 📝😴</div>
+                    <div class="option" onclick="selectOption(this, false)">الاعتماد على الحظ</div>
+                    <div class="option" onclick="selectOption(this, false)">توظيف نفس الشخص لكل الأدوار</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 5 من 14</span>
+                <span class="question-type">فريق التخطيط</span>
+            </div>
+            <div class="question-content">
+                <h2>كم مرة يجب مراجعة الخطة الاستراتيجية؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">سنوياً أو عند تغييرات جوهرية في السوق</div>
+                    <div class="option" onclick="selectOption(this, false)">مرة كل 5 سنوات</div>
+                    <div class="option" onclick="selectOption(this, false)">لا داعي للمراجعة أبداً</div>
+                    <div class="option" onclick="selectOption(this, false)">كلما تذكرنا 😅</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 6 من 14</span>
+                <span class="question-type">فريق إدارة المخاطر</span>
+            </div>
+            <div class="question-content">
+                <h2>ما أخطر سيناريو قد يواجه الأعمال؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">فقدان القيادة الرئيسية + أزمة مالية + فقدان البيانات بآن واحد</div>
+                    <div class="option" onclick="selectOption(this, false)">انتهاء القهوة من المكتب ☕</div>
+                    <div class="option" onclick="selectOption(this, false)">موظف واحد في إجازة</div>
+                    <div class="option" onclick="selectOption(this, false)">الاجتماع المطول 😴</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 7 من 14</span>
+                <span class="question-type">فريق التخطيط</span>
+            </div>
+            <div class="question-content">
+                <h2>أي من هذه يمثل تحديات في تنفيذ الاستراتيجية؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">قلة الموارد + مقاومة التغيير + عدم التواصل الفعال</div>
+                    <div class="option" onclick="selectOption(this, false)">فقط المال لا يكفي</div>
+                    <div class="option" onclick="selectOption(this, false)">الموظفون كسولون فقط</div>
+                    <div class="option" onclick="selectOption(this, false)">لا توجد تحديات في الواقع</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 8 من 14</span>
+                <span class="question-type">فريق إدارة المخاطر</span>
+            </div>
+            <div class="question-content">
+                <h2>كيف نتعامل مع موظف أساسي يترك الشركة فجأة؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">توثيق المعارف + تدريب بديل + حوافز للبقاء مسبقاً</div>
+                    <div class="option" onclick="selectOption(this, false)">نبدأ البحث عن بديل ✔️</div>
+                    <div class="option" onclick="selectOption(this, false)">ننتظر حتى يترك عدة موظفين</div>
+                    <div class="option" onclick="selectOption(this, false)">لا يوجد موظف أساسي في الحقيقة 😄</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 9 من 14</span>
+                <span class="question-type">فريق التخطيط</span>
+            </div>
+            <div class="question-content">
+                <h2>ما الذي يميز الشركات الناجحة استراتيجياً؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">التنبؤ بالمستقبل + التكيف السريع + قيادة واضحة</div>
+                    <div class="option" onclick="selectOption(this, false)">الحظ وحده</div>
+                    <div class="option" onclick="selectOption(this, false)">تجنب كل التغييرات</div>
+                    <div class="option" onclick="selectOption(this, false)">نسخ المنافسين بدقة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 10 من 14</span>
+                <span class="question-type">فريق إدارة المخاطر</span>
+            </div>
+            <div class="question-content">
+                <h2>ماذا تفعل إذا اكتشفت خطأ في البيانات المالية الأساسية؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">إبلاغ الإدارة فوراً + تحقيق + تصحيح + توثيق الدروس</div>
+                    <div class="option" onclick="selectOption(this, false)">تجاهلها وآمل أن لا يلاحظ أحد 🤐</div>
+                    <div class="option" onclick="selectOption(this, false)">إخبار صديقك في المكتب فقط</div>
+                    <div class="option" onclick="selectOption(this, false)">الانتظار حتى نهاية السنة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q11 - Cultural Question -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 11 من 14</span>
+                <span class="question-type">سؤال ثقافي 🌍</span>
+            </div>
+            <div class="question-content">
+                <h2>في أي دولة عربية يقع مقر منظمة "التعاون الإسلامي"؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">السعودية (جدة)</div>
+                    <div class="option" onclick="selectOption(this, false)">مصر (القاهرة)</div>
+                    <div class="option" onclick="selectOption(this, false)">الإمارات (أبوظبي)</div>
+                    <div class="option" onclick="selectOption(this, false)">الأردن (عمّان)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q12 - Funny Question -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 12 من 14</span>
+                <span class="question-type">سؤال فكاهي 😂</span>
+            </div>
+            <div class="question-content">
+                <h2>ماذا يقال عن الشركات التي لا تخطط للمستقبل؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">تخطط للفشل 📉</div>
+                    <div class="option" onclick="selectOption(this, false)">تعيش اللحظة الحاضرة فقط 🎉</div>
+                    <div class="option" onclick="selectOption(this, false)">أكثر مرونة وسعادة 😄</div>
+                    <div class="option" onclick="selectOption(this, false)">تعتمد على العرافين والنجوم 🌟</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q13 - Cultural Question -->
+        <div class="slide slide-team1">
+            <div class="question-header team1">
+                <span class="question-number">السؤال 13 من 14</span>
+                <span class="question-type">سؤال ثقافي 🌍</span>
+            </div>
+            <div class="question-content">
+                <h2>كم عدد دول مجلس التعاون الخليجي؟</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">6 دول</div>
+                    <div class="option" onclick="selectOption(this, false)">5 دول</div>
+                    <div class="option" onclick="selectOption(this, false)">7 دول</div>
+                    <div class="option" onclick="selectOption(this, false)">4 دول</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Q14 - Final Funny Question -->
+        <div class="slide slide-team2">
+            <div class="question-header team2">
+                <span class="question-number">السؤال 14 من 14</span>
+                <span class="question-type">سؤال ختامي فكاهي 🎯</span>
+            </div>
+            <div class="question-content">
+                <h2>كم اجتماع استغرق حتى توافقت على هذه اللعبة؟ 😄</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(this, true)">أكثر من اللازم! لكنها تستحق ✨</div>
+                    <div class="option" onclick="selectOption(this, false)">اجتماع واحد كافٍ دائماً</div>
+                    <div class="option" onclick="selectOption(this, false)">اتفقنا بالصدفة 🎲</div>
+                    <div class="option" onclick="selectOption(this, false)">لم نتفق بعد 🤔</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Final Scores -->
+        <div class="slide slide-score">
+            <div class="score-board">
+                <h2>🏆 النتائج النهائية 🏆</h2>
+                <div class="scores">
+                    <div class="score-card planning">
+                        <h3>🎯 فريق التخطيط</h3>
+                        <div class="score-value" id="team1-final">0</div>
+                        <p>نقطة</p>
+                    </div>
+                    <div class="score-card risk">
+                        <h3>🛡️ فريق إدارة المخاطر</h3>
+                        <div class="score-value" id="team2-final">0</div>
+                        <p>نقطة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Winner -->
+        <div class="slide slide-end">
+            <div class="winner-content">
+                <h1>🎊 تهانينا! 🎊</h1>
+                <div class="trophy">🏆</div>
+                <div class="winner-name" id="winner-name">الفريق الفائز</div>
+                <p style="font-size: 1.3rem; color: #333; margin-top: 30px;">شكراً لمشاركتكم! 👏</p>
+                <p style="font-size: 1.1rem; color: #666; margin-top: 20px;">استراتيجية جيدة + إدارة مخاطر فعالة = نجاح مستدام ✨</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-buttons">
+            <button class="btn-prev" onclick="prevSlide()">← السابق</button>
+            <div class="slide-counter"><span id="current-slide">1</span> / 17</div>
+            <button class="btn-next" onclick="nextSlide()">التالي →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let team1Score = 0;
+        let team2Score = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+            document.getElementById('current-slide').textContent = n + 1;
+
+            // Update navigation buttons
+            const prevBtn = document.querySelector('.btn-prev');
+            const nextBtn = document.querySelector('.btn-next');
+
+            prevBtn.disabled = n === 0;
+            nextBtn.disabled = n === totalSlides - 1;
+
+            // Remove all selected states when moving slides
+            if (n < totalSlides - 2) {
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                    opt.onclick = opt.onclick; // Re-enable click
+                });
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        function selectOption(element, isCorrect) {
+            // Disable all options in this question
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.onclick = null;
+                opt.style.cursor = 'default';
+            });
+
+            // Show result
+            if (isCorrect) {
+                element.classList.add('correct');
+                // Determine which team gets the point based on current slide
+                if (currentSlide >= 1 && currentSlide <= 14) {
+                    // Odd slides (1,3,5,7,9,11,13) = Team 1
+                    // Even slides (2,4,6,8,10,12,14) = Team 2
+                    if ((currentSlide - 1) % 2 === 0) {
+                        team1Score++;
+                    } else {
+                        team2Score++;
+                    }
+                }
+                // Show all correct options
+                options.forEach(opt => {
+                    if (opt.textContent.includes(element.textContent) || 
+                        opt.classList.contains('correct')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            } else {
+                element.classList.add('incorrect');
+                // Show correct answer
+                options.forEach(opt => {
+                    if (opt.classList.contains('correct') === false && 
+                        Array.from(opt.parentElement.children).indexOf(opt) === 
+                        Array.from(opt.parentElement.children).indexOf(
+                            Array.from(opt.parentElement.children).find(o => {
+                                // Find the option with onclick that returns true
+                                return o !== element;
+                            })
+                        )) {
+                        // Find correct one by checking the others
+                    }
+                });
+                // Highlight all correct answers
+                options.forEach(opt => {
+                    const onclickStr = opt.getAttribute('onclick');
+                    if (onclickStr && onclickStr.includes('true')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+
+            // Update final scores when reaching the end
+            if (currentSlide === 14) {
+                setTimeout(() => {
+                    document.getElementById('team1-final').textContent = team1Score;
+                    document.getElementById('team2-final').textContent = team2Score;
+                    
+                    // Determine winner
+                    let winnerName = 'تعادل مثير! 🤝';
+                    if (team1Score > team2Score) {
+                        winnerName = 'فريق التخطيط 🎯';
+                    } else if (team2Score > team1Score) {
+                        winnerName = 'فريق إدارة المخاطر 🛡️';
+                    }
+                    document.getElementById('winner-name').textContent = winnerName;
+                }, 500);
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+        });
+    </script>
+</body>
+</html>
