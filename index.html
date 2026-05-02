@@ -10,126 +10,100 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
 
         body {
-            background-color: #fdf5e6;
-            background-image: url('https://raw.githubusercontent.com/imarvam/smo-gathering/main/strategic_game_background.png');
+            background-color: #f0f7ff;
+            background-image: url('https://raw.githubusercontent.com/imarvam/smo-gathering/main/strategic_planning_modern_bg.png');
             background-size: cover; background-position: center; background-attachment: fixed;
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-        }
-
-        body::before {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(253, 245, 230, 0.4); z-index: 1;
         }
 
         .game-container {
-            width: 95%; max-width: 1000px; height: 85vh;
-            background: rgba(255, 255, 255, 0.95); border-radius: 40px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
-            position: relative; z-index: 10; border: 10px solid #f8e1cc;
-            display: flex; flex-direction: column; overflow: hidden;
+            width: 90%; max-width: 900px; height: 80vh;
+            background: rgba(255, 255, 255, 0.98); border-radius: 30px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.8);
         }
 
-        /* All Slides */
-        .slide {
-            display: none; width: 100%; height: 100%; padding: 40px;
-            flex-direction: column; align-items: center; justify-content: center;
-            animation: fadeIn 0.5s ease;
-        }
+        .slide { display: none; width: 100%; height: 100%; padding: 40px; flex-direction: column; align-items: center; justify-content: center; animation: slideUp 0.4s ease; }
         .slide.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Map */
-        .grid-container {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
-            width: 100%; max-width: 700px; margin-top: 20px;
+        /* Modern Grid */
+        .grid-ui {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+            width: 100%; max-width: 600px;
         }
-        .q-box {
-            aspect-ratio: 1; background: linear-gradient(135deg, #fff9f0 0%, #f8e1cc 100%);
-            border: 3px solid #d4af37; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; font-weight: 800; color: #8b5e3c;
-            cursor: pointer; transition: all 0.3s;
+        .q-button {
+            aspect-ratio: 1; background: #fff; border: 4px solid #00bcd4; border-radius: 18px;
+            font-size: 2.2rem; font-weight: 800; color: #00838f; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 8px 0 #0097a7; text-shadow: 1px 1px 0 #fff;
         }
-        .q-box:hover { transform: scale(1.1); box-shadow: 0 10px 20px rgba(212,175,55,0.2); }
-        .q-box.disabled { background: #d3d3d3; border-color: #a0a0a0; color: #808080; cursor: not-allowed; transform: none; }
+        .q-button:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #0097a7; background: #e0f7fa; }
+        .q-button:active { transform: translateY(5px); box-shadow: 0 2px 0 #0097a7; }
+        .q-button.disabled { background: #cfd8dc; border-color: #90a4ae; color: #607d8b; box-shadow: 0 4px 0 #78909c; cursor: not-allowed; transform: none; }
 
-        /* Question UI */
-        .timer-header {
-            width: 100%; height: 15px; background: #eee; border-radius: 10px;
-            margin-bottom: 20px; overflow: hidden;
-        }
-        .timer-bar { width: 100%; height: 100%; background: #4caf50; transition: width 1s linear; }
+        /* Timer */
+        .progress-box { width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
+        .progress-bar { width: 100%; height: 100%; background: #00bcd4; transition: width 0.5s linear; }
 
-        .question-text { font-size: 2.2rem; color: #5d4037; text-align: center; margin-bottom: 30px; font-weight: 800; }
-        
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
-        .option-btn {
-            padding: 20px; background: white; border: 3px solid #f1f1f1; border-radius: 20px;
-            font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-align: center;
+        .question-h { font-size: 2.5rem; color: #1a237e; text-align: center; margin-bottom: 40px; line-height: 1.3; }
+        .opts-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+        .opt-item {
+            padding: 22px; background: #f5f5f5; border: 2px solid #e0e0e0; border-radius: 15px;
+            font-size: 1.3rem; font-weight: 700; cursor: pointer; transition: 0.2s; color: #37474f;
         }
-        .option-btn:hover { border-color: #d4af37; background: #fffdf5; }
-        .option-btn.correct { background: #e8f5e9; border-color: #4caf50; color: #2e7d32; }
-        .option-btn.incorrect { background: #ffebee; border-color: #f44336; color: #c62828; }
+        .opt-item:hover { background: #e3f2fd; border-color: #2196f3; color: #0d47a1; }
+        .opt-item.correct { background: #c8e6c9; border-color: #4caf50; color: #1b5e20; }
+        .opt-item.incorrect { background: #ffcdd2; border-color: #f44336; color: #b71c1c; }
 
-        /* Animations */
-        .feedback-overlay {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            display: none; align-items:center; justify-content:center;
-            font-size: 5rem; z-index: 100; pointer-events: none;
-        }
+        .team-tag { padding: 8px 25px; border-radius: 20px; font-weight: 800; margin-bottom: 20px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        /* Buttons */
-        .btn-main {
-            padding: 15px 40px; background: #8b5e3c; color: white; border: none;
-            border-radius: 15px; font-size: 1.4rem; font-weight: 800; cursor: pointer;
-        }
+        .btn-ready { padding: 18px 50px; background: #00bcd4; color: white; border: none; border-radius: 15px; font-size: 1.6rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #0097a7; }
+        .btn-ready:hover { background: #26c6da; }
+
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:none; align-items:center; justify-content:center; font-size:6rem; z-index:100; backdrop-filter: blur(3px); }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Start Slide -->
-        <div id="slide-start" class="slide active">
-            <h1 style="font-size: 3.5rem; color:#8b5e3c;">تحدي التخطيط الاستراتيجي</h1>
-            <p style="font-size: 1.5rem; margin: 20px 0;">جاهزون للتحدي؟</p>
-            <button class="btn-main" onclick="goToMap()">ابدأ اللعبة</button>
+        <div id="s-start" class="slide active">
+            <h1 style="font-size: 4rem; color: #1a237e; margin-bottom: 20px;">🏆 التحدي الاستراتيجي</h1>
+            <p style="font-size: 1.4rem; color: #546e7a; margin-bottom: 40px;">فريق التخطيط ضد فريق إدارة المخاطر</p>
+            <button class="btn-ready" onclick="goMap()">دخول اللعبة</button>
         </div>
 
-        <!-- Map Slide -->
-        <div id="slide-map" class="slide">
-            <h2 style="color:#8b5e3c; margin-bottom: 20px;">اختر سؤالاً</h2>
-            <div id="grid" class="grid-container"></div>
-            <div style="margin-top:20px; display:flex; gap:20px;">
-                <div style="padding:10px; border-radius:10px; background:#fee7d1;">التخطيط: <span id="s1">0</span></div>
-                <div style="padding:10px; border-radius:10px; background:#fce4ec;">المخاطر: <span id="s2">0</span></div>
+        <div id="s-map" class="slide">
+            <h2 style="color: #00838f; margin-bottom: 30px; font-size: 2.2rem;">اختر رقم التحدي</h2>
+            <div id="grid-list" class="grid-ui"></div>
+            <div style="margin-top: 30px; display: flex; gap: 40px;">
+                <div style="text-align: center;"><div style="color: #00838f; font-weight: bold;">التخطيط</div><div id="v1" style="font-size: 3rem; font-weight: 900; color: #00acc1;">0</div></div>
+                <div style="text-align: center;"><div style="color: #ec407a; font-weight: bold;">المخاطر</div><div id="v2" style="font-size: 3rem; font-weight: 900; color: #d81b60;">0</div></div>
             </div>
         </div>
 
-        <!-- Question Slide -->
-        <div id="slide-question" class="slide">
-            <div class="timer-header"><div id="t-bar" class="timer-bar"></div></div>
-            <div id="q-team" style="padding:5px 20px; border-radius:20px; margin-bottom:10px; font-weight:bold;"></div>
-            <div id="q-text" class="question-text"></div>
-            <div id="q-options" class="options-grid"></div>
+        <div id="s-q" class="slide">
+            <div class="progress-box"><div id="p-bar" class="progress-bar"></div></div>
+            <div id="t-name" class="team-tag"></div>
+            <div id="q-val" class="question-h"></div>
+            <div id="o-list" class="opts-box"></div>
         </div>
 
-        <!-- Score Slide -->
-        <div id="slide-score" class="slide">
-            <h1 id="winner-text"></h1>
-            <div class="trophy" style="font-size:8rem;">🏆</div>
-            <button class="btn-main" onclick="location.reload()">إعادة اللعبة</button>
+        <div id="s-win" class="slide">
+            <h1 id="win-msg" style="font-size: 3.5rem; text-align: center; color: #1a237e;"></h1>
+            <div style="font-size: 10rem; margin: 30px 0;">🎉</div>
+            <button class="btn-ready" onclick="location.reload()">لعب مرة أخرى</button>
         </div>
 
-        <div id="feedback" class="feedback-overlay"></div>
+        <div id="msg-box" class="overlay"></div>
     </div>
 
-    <!-- Audio Elements -->
-    <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2010/2010-preview.mp3"></audio>
-    <audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
-    <audio id="snd-tick" src="https://assets.mixkit.co/active_storage/sfx/2555/2555-preview.mp3" loop></audio>
+    <!-- Clearer Game Sounds -->
+    <audio id="snd-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+    <audio id="snd-fail" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
     <script>
-        const questions = [
+        const dataSet = [
             {q: "ما هو الهدف الأساسي من التخطيط الاستراتيجي؟", a: ["تحديد الاتجاه المستقبلي للمنظمة", "إصدار تقارير شهرية", "الإنفاق العشوائي", "تقليل الموظفين"], c: 0},
             {q: "كيف نتعامل مع تعطل نظام البيانات؟", a: ["نأمل أن لا يحدث", "خطة طوارئ مسبقة", "نستدعي الفني لاحقاً", "نغلق المكتب"], c: 1},
             {q: "أي من هذه مكونات الخطة الاستراتيجية؟", a: ["الرؤية والرسالة والأهداف", "أحلام عشوائية", "الميزانية فقط", "تقليد المنافسين"], c: 0},
@@ -146,99 +120,87 @@
             {q: "كم اجتماعاً استغرقت هذه اللعبة؟", a: ["أكثر من اللازم!", "واحد", "بالصدفة", "لم نتفق"], c: 0}
         ];
 
-        let s1 = 0, s2 = 0;
-        let answered = new Set();
-        let timer;
+        let score1 = 0, score2 = 0;
+        let done = new Set();
+        let qTimer;
 
-        function goToMap() {
-            showSlide('slide-map');
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+        function goMap() {
+            sd('s-map');
+            const g = document.getElementById('grid-list');
+            g.innerHTML = '';
             for(let i=1; i<=14; i++) {
-                const b = document.createElement('div');
-                b.className = 'q-box' + (answered.has(i-1) ? ' disabled' : '');
+                const b = document.createElement('button');
+                b.className = 'q-button' + (done.has(i-1) ? ' disabled' : '');
                 b.textContent = i;
-                if(!answered.has(i-1)) b.onclick = () => startQ(i-1);
-                grid.appendChild(b);
+                if(!done.has(i-1)) b.onclick = () => showQ(i-1);
+                g.appendChild(b);
             }
         }
 
-        function showSlide(id) {
+        function sd(id) {
             document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function startQ(idx) {
-            const data = questions[idx];
-            showSlide('slide-question');
-            const teamNode = document.getElementById('q-team');
-            const isTeam1 = (answered.size % 2 === 0);
-            teamNode.textContent = isTeam1 ? "فريق التخطيط 🎯" : "فريق المخاطر 🛡️";
-            teamNode.style.background = isTeam1 ? "#fee7d1" : "#fce4ec";
-            
-            document.getElementById('q-text').textContent = data.q;
-            const optContainer = document.getElementById('q-options');
-            optContainer.innerHTML = '';
-            data.a.forEach((txt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = txt;
-                btn.onclick = () => check(idx, i, btn);
-                optContainer.appendChild(btn);
+        function showQ(idx) {
+            sd('s-q');
+            const isT1 = (done.size % 2 === 0);
+            const tag = document.getElementById('t-name');
+            tag.textContent = isT1 ? "فريق التخطيط 🎯" : "فريق المخاطر 🛡️";
+            tag.style.background = isT1 ? "#e0f7fa" : "#fce4ec";
+            tag.style.color = isT1 ? "#00838f" : "#d81b60";
+
+            document.getElementById('q-val').textContent = dataSet[idx].q;
+            const ol = document.getElementById('o-list');
+            ol.innerHTML = '';
+            dataSet[idx].a.forEach((t, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'opt-item';
+                btn.textContent = t;
+                btn.onclick = () => verify(idx, i, btn);
+                ol.appendChild(btn);
             });
 
-            // Timer
-            let time = 100;
-            const bar = document.getElementById('t-bar');
-            document.getElementById('snd-tick').play();
-            clearInterval(timer);
-            timer = setInterval(() => {
-                time -= 2;
-                bar.style.width = time + '%';
-                if(time <= 0) {
-                    clearInterval(timer);
-                    check(idx, -1);
-                }
-            }, 500);
+            let t = 100;
+            const bar = document.getElementById('p-bar');
+            clearInterval(qTimer);
+            qTimer = setInterval(() => {
+                t -= 1;
+                bar.style.width = t + '%';
+                if(t <= 0) { clearInterval(qTimer); verify(idx, -1); }
+            }, 200);
         }
 
-        function check(qIdx, choice, btn) {
-            clearInterval(timer);
-            document.getElementById('snd-tick').pause();
-            document.getElementById('snd-tick').currentTime = 0;
-            
-            const correct = questions[qIdx].c;
-            const feedback = document.getElementById('feedback');
-            feedback.style.display = 'flex';
-            
-            const isTeam1 = (answered.size % 2 === 0);
+        function verify(qI, c, el) {
+            clearInterval(qTimer);
+            const cor = dataSet[qI].c;
+            const m = document.getElementById('msg-box');
+            m.style.display = 'flex';
+            const isT1 = (done.size % 2 === 0);
 
-            if(choice === correct) {
-                if(btn) btn.classList.add('correct');
-                feedback.textContent = "✅ رائع!";
-                document.getElementById('snd-correct').play();
-                if(isTeam1) s1++; else s2++;
+            if(c === cor) {
+                if(el) el.classList.add('correct');
+                m.textContent = "✅"; m.style.color = "#4caf50";
+                document.getElementById('snd-win').play();
+                if(isT1) score1++; else score2++;
             } else {
-                if(btn) btn.classList.add('incorrect');
-                feedback.textContent = "❌ خطأ";
-                document.getElementById('snd-wrong').play();
+                if(el) el.classList.add('incorrect');
+                m.textContent = "❌"; m.style.color = "#f44336";
+                document.getElementById('snd-fail').play();
             }
 
-            answered.add(qIdx);
-            document.getElementById('s1').textContent = s1;
-            document.getElementById('s2').textContent = s2;
+            done.add(qI);
+            document.getElementById('v1').textContent = score1;
+            document.getElementById('v2').textContent = score2;
 
             setTimeout(() => {
-                feedback.style.display = 'none';
-                if(answered.size === 14) finish();
-                else goToMap();
-            }, 2000);
-        }
-
-        function finish() {
-            showSlide('slide-score');
-            const txt = s1 > s2 ? "فريق التخطيط هو الفائز! 🏆" : (s2 > s1 ? "فريق المخاطر هو الفائز! 🏆" : "تعادل رائع! 🤝");
-            document.getElementById('winner-text').textContent = txt;
+                m.style.display = 'none';
+                if(done.size === 14) {
+                    sd('s-win');
+                    const r = score1 > score2 ? "فريق التخطيط فاز بالتحدي!" : (score2 > score1 ? "فريق المخاطر فاز بالتحدي!" : "تعادل الفريقان!");
+                    document.getElementById('win-msg').textContent = r;
+                } else goMap();
+            }, 1200);
         }
     </script>
 </body>
