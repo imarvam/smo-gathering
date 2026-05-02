@@ -3,697 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة التخطيط الاستراتيجي</title>
-            <style>
+    <title>تحدي التخطيط الاستراتيجي</title>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
 
         body {
             background-color: #fdf5e6;
-            background-image: url('https://raw.githubusercontent.com/imarvam/smo-gathering/main/strategic_game_background_1777740606275.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
+            background-image: url('https://raw.githubusercontent.com/imarvam/smo-gathering/main/strategic_game_background.png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
         }
 
-        /* Overlay for readability */
         body::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(253, 245, 230, 0.4);
-            z-index: 1;
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(253, 245, 230, 0.4); z-index: 1;
         }
 
         .game-container {
-            width: 100%;
-            max-width: 1000px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            position: relative;
-            z-index: 10;
-            border: 8px solid #f8e1cc;
+            width: 95%; max-width: 1000px; height: 85vh;
+            background: rgba(255, 255, 255, 0.95); border-radius: 40px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+            position: relative; z-index: 10; border: 10px solid #f8e1cc;
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
+        /* All Slides */
         .slide {
-            display: none;
-            padding: 50px 40px;
-            min-height: 600px;
-            animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            background: transparent;
+            display: none; width: 100%; height: 100%; padding: 40px;
+            flex-direction: column; align-items: center; justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .slide.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Grid Map */
+        .grid-container {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+            width: 100%; max-width: 700px; margin-top: 20px;
+        }
+        .q-box {
+            aspect-ratio: 1; background: linear-gradient(135deg, #fff9f0 0%, #f8e1cc 100%);
+            border: 3px solid #d4af37; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 800; color: #8b5e3c;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .q-box:hover { transform: scale(1.1); box-shadow: 0 10px 20px rgba(212,175,55,0.2); }
+        .q-box.disabled { background: #d3d3d3; border-color: #a0a0a0; color: #808080; cursor: not-allowed; transform: none; }
+
+        /* Question UI */
+        .timer-header {
+            width: 100%; height: 15px; background: #eee; border-radius: 10px;
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .timer-bar { width: 100%; height: 100%; background: #4caf50; transition: width 1s linear; }
+
+        .question-text { font-size: 2.2rem; color: #5d4037; text-align: center; margin-bottom: 30px; font-weight: 800; }
+        
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
+        .option-btn {
+            padding: 20px; background: white; border: 3px solid #f1f1f1; border-radius: 20px;
+            font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-align: center;
+        }
+        .option-btn:hover { border-color: #d4af37; background: #fffdf5; }
+        .option-btn.correct { background: #e8f5e9; border-color: #4caf50; color: #2e7d32; }
+        .option-btn.incorrect { background: #ffebee; border-color: #f44336; color: #c62828; }
+
+        /* Animations */
+        .feedback-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            display: none; align-items:center; justify-content:center;
+            font-size: 5rem; z-index: 100; pointer-events: none;
         }
 
-        .slide.active {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        /* Buttons */
+        .btn-main {
+            padding: 15px 40px; background: #8b5e3c; color: white; border: none;
+            border-radius: 15px; font-size: 1.4rem; font-weight: 800; cursor: pointer;
         }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Decorative Elements */
-        .decor-top {
-            position: absolute;
-            top: -20px; width: 100%;
-            display: flex; justify-content: space-between;
-            padding: 0 20px; pointer-events: none;
-        }
-        .decor-star { font-size: 2rem; color: #d4af37; animation: bounce 3s infinite; }
-
-        /* Title Style */
-        .title-content { text-align: center; }
-        .title-content h1 {
-            font-size: 3.8rem;
-            color: #8b5e3c;
-            margin-bottom: 10px;
-            font-weight: 800;
-            text-shadow: 2px 2px 0px #fff;
-        }
-        .mabkhara-icon { font-size: 5rem; margin-bottom: 20px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); }
-
-        .teams-intro {
-            display: flex; gap: 20px; margin-top: 40px; width: 100%; justify-content: center;
-        }
-        .team-intro {
-            padding: 25px; border-radius: 25px; flex: 1; max-width: 350px;
-            text-align: center; transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-        .team-intro.planning { background: #fee7d1; border: 3px solid #f8cc9d; color: #8b5e3c; }
-        .team-intro.risk { background: #fce4ec; border: 3px solid #f48fb1; color: #c2185b; }
-        .team-intro h2 { font-size: 1.8rem; margin-bottom: 10px; }
-
-        /* Question Slides */
-        .question-header {
-            display: flex; justify-content: space-between; align-items: center;
-            width: 100%; margin-bottom: 40px; padding: 20px 30px;
-            background: #fff9f0; border-radius: 20px; border: 2px solid #f8e1cc;
-        }
-        .question-number { font-size: 1.3rem; font-weight: 800; color: #8b5e3c; }
-        .question-type { font-size: 1.1rem; padding: 10px 25px; border-radius: 30px; font-weight: bold; }
-        .team1 .question-type { background: #f8cc9d; color: #8b5e3c; }
-        .team2 .question-type { background: #f48fb1; color: #fff; }
-
-        .question-content h2 {
-            font-size: 2.4rem; color: #5d4037; text-align: center;
-            line-height: 1.4; margin-bottom: 40px;
-        }
-
-        .options {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;
-        }
-        .option {
-            padding: 25px; background: white; border: 3px solid #f1f1f1;
-            border-radius: 20px; cursor: pointer; transition: all 0.3s;
-            font-size: 1.3rem; font-weight: 700; color: #5d4037; text-align: center;
-        }
-        .option:hover {
-            border-color: #d4af37; transform: translateY(-5px);
-            background: #fffdf5; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
-        }
-        .option.correct { background: #e8f5e9; border-color: #4caf50; color: #2e7d32; }
-        .option.incorrect { background: #ffebee; border-color: #f44336; color: #c62828; }
-
-        /* Results */
-        .score-board { width: 100%; text-align: center; }
-        .scores { display: flex; gap: 30px; justify-content: center; margin-top: 30px; }
-        .score-card { padding: 40px; border-radius: 30px; min-width: 200px; background: white; border: 4px solid #f8e1cc; }
-        .score-value { font-size: 5rem; font-weight: 900; color: #d4af37; margin: 15px 0; }
-
-        /* Navigation */
-        .nav-buttons {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 25px 40px; background: #fff9f0; border-top: 4px solid #f8e1cc;
-        }
-        button {
-            padding: 15px 40px; font-size: 1.3rem; border: none; border-radius: 15px;
-            cursor: pointer; transition: 0.3s; font-weight: 800;
-        }
-        .btn-prev { background: #e0e0e0; color: #616161; }
-        .btn-next { background: #8b5e3c; color: #fff; box-shadow: 0 5px 15px rgba(139, 94, 60, 0.3); }
-        .btn-next:hover { transform: scale(1.05); }
-
-        @media (max-width: 768px) {
-            .options { grid-template-columns: 1fr; }
-            .title-content h1 { font-size: 2.5rem; }
-            .teams-intro { flex-direction: column; }
-        }
-    
-    /* Grid Selection Style */
-    .strategy-map {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        width: 100%;
-        max-width: 800px;
-        margin-top: 30px;
-    }
-    .grid-item {
-        aspect-ratio: 1;
-        background: #fff;
-        border: 4px solid #f8e1cc;
-        border-radius: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        position: relative;
-        overflow: hidden;
-    }
-    .grid-item:hover {
-        transform: scale(1.1) rotate(3deg);
-        border-color: #d4af37;
-        box-shadow: 0 10px 20px rgba(212,175,55,0.2);
-    }
-    .grid-item.completed {
-        background: #f1f1f1;
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-    .grid-item.completed::after {
-        content: '✅';
-        position: absolute;
-        font-size: 2rem;
-    }
-    .grid-item i { font-size: 2.5rem; margin-bottom: 5px; }
-    .grid-item span { font-weight: 800; color: #8b5e3c; }
-
-    /* Animated Timer Bar */
-    .timer-container {
-        width: 100%;
-        height: 10px;
-        background: #eee;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        overflow: hidden;
-    }
-    .timer-bar {
-        height: 100%;
-        background: linear-gradient(to right, #4caf50, #ff9800, #f44336);
-        width: 100%;
-        transition: width 1s linear;
-    }
-
-    /* Floating Feedback */
-    .feedback-pop {
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 5rem;
-        z-index: 1000;
-        animation: popOut 1s forwards;
-        pointer-events: none;
-        display: none;
-    }
-    @keyframes popOut {
-        0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-        50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-    }
-</style>
+    </style>
 </head>
 <body>
-    <div id="stars-container" class="bg-stars"></div>
-    <div class="game-container"><div class="decor-top"><span class="decor-star">⭐</span><span class="decor-star">⭐</span></div>
-        
-        <!-- Strategy Map Slide -->
-        <div id="map-slide" class="slide">
-            <h1 style="color: #8b5e3c; margin-bottom: 20px;">🗺️ خريطة التحدي الاستراتيجي</h1>
-            <p style="margin-bottom: 30px; font-weight: bold;">اختاروا رقم السؤال المفضل للفريق!</p>
-            <div class="strategy-map" id="game-map">
-                <!-- Generated by JS -->
+    <div class="game-container">
+        <!-- Start Slide -->
+        <div id="slide-start" class="slide active">
+            <h1 style="font-size: 3.5rem; color:#8b5e3c;">تحدي التخطيط الاستراتيجي</h1>
+            <p style="font-size: 1.5rem; margin: 20px 0;">جاهزون للتحدي؟</p>
+            <button class="btn-main" onclick="goToMap()">ابدأ اللعبة</button>
+        </div>
+
+        <!-- Map Slide -->
+        <div id="slide-map" class="slide">
+            <h2 style="color:#8b5e3c; margin-bottom: 20px;">اختر سؤالاً</h2>
+            <div id="grid" class="grid-container"></div>
+            <div style="margin-top:20px; display:flex; gap:20px;">
+                <div style="padding:10px; border-radius:10px; background:#fee7d1;">التخطيط: <span id="s1">0</span></div>
+                <div style="padding:10px; border-radius:10px; background:#fce4ec;">المخاطر: <span id="s2">0</span></div>
             </div>
         </div>
 
-        <!-- Slide 1: Title -->
-        <div class="slide slide-title active">
-            <div class="title-content">
-                <div class="mabkhara-icon">🕯️</div>
-                <h1>✨ لعبة التخطيط الاستراتيجي ✨</h1>
-                <p style="font-size: 1.3rem; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Strategic Planning Interactive Game</p>
-                <div class="teams-intro">
-                    <div class="team-intro planning">
-                        <h2>🎯 فريق التخطيط</h2>
-                        <p>Planning Team</p>
-                        <p style="margin-top: 10px; font-size: 0.9rem;">متخصصون في الرؤية المستقبلية والأهداف الاستراتيجية</p>
-                    </div>
-                    <div class="team-intro risk">
-                        <h2>🛡️ فريق إدارة المخاطر</h2>
-                        <p>Business Continuity & Risk Management</p>
-                        <p style="margin-top: 10px; font-size: 0.9rem;">متخصصون في التعامل مع التحديات واستمرارية الأعمال</p>
-                    </div>
-                </div>
-                <p style="margin-top: 40px; font-size: 1.1rem;">14 أسئلة متنوعة • مجموع 14 نقطة</p>
-            </div>
+        <!-- Question Slide -->
+        <div id="slide-question" class="slide">
+            <div class="timer-header"><div id="t-bar" class="timer-bar"></div></div>
+            <div id="q-team" style="padding:5px 20px; border-radius:20px; margin-bottom:10px; font-weight:bold;"></div>
+            <div id="q-text" class="question-text"></div>
+            <div id="q-options" class="options-grid"></div>
         </div>
 
-        <!-- Slide 2-15: Questions -->
-        <!-- Q1 -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 1 من 14</span>
-                <span class="question-type">فريق التخطيط</span>
-            </div>
-            <div class="question-content">
-                <h2>ما هو الهدف الأساسي من التخطيط الاستراتيجي؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">تحديد الاتجاه المستقبلي للمنظمة والموارد المطلوبة</div>
-                    <div class="option" onclick="selectOption(this, false)">إصدار التقارير الشهرية فقط</div>
-                    <div class="option" onclick="selectOption(this, false)">الإنفاق العشوائي على المشاريع</div>
-                    <div class="option" onclick="selectOption(this, false)">تقليل عدد الموظفين بسرعة</div>
-                </div>
-            </div>
+        <!-- Score Slide -->
+        <div id="slide-score" class="slide">
+            <h1 id="winner-text"></h1>
+            <div class="trophy" style="font-size:8rem;">🏆</div>
+            <button class="btn-main" onclick="location.reload()">إعادة اللعبة</button>
         </div>
 
-        <!-- Q2 -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 2 من 14</span>
-                <span class="question-type">فريق إدارة المخاطر</span>
-            </div>
-            <div class="question-content">
-                <h2>كيف نتعامل مع تعطل نظام البيانات المركزي؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, false)">نأمل أن لا يحدث ❌</div>
-                    <div class="option" onclick="selectOption(this, true)">خطة طوارئ مسبقة + نسخ احتياطية + فريق استجابة جاهز</div>
-                    <div class="option" onclick="selectOption(this, false)">نستدعي الفني بعد الفوات 🤷</div>
-                    <div class="option" onclick="selectOption(this, false)">نغلق المكتب يوماً</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q3 -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 3 من 14</span>
-                <span class="question-type">فريق التخطيط</span>
-            </div>
-            <div class="question-content">
-                <h2>أي من هذه هي مكونات خطة استراتيجية فعالة؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">الرؤية + الرسالة + الأهداف + الإجراءات</div>
-                    <div class="option" onclick="selectOption(this, false)">أحلام وطموحات عشوائية</div>
-                    <div class="option" onclick="selectOption(this, false)">فقط الميزانية</div>
-                    <div class="option" onclick="selectOption(this, false)">تقليد ما تفعله المنافسين</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q4 -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 4 من 14</span>
-                <span class="question-type">فريق إدارة المخاطر</span>
-            </div>
-            <div class="question-content">
-                <h2>ما أفضل ممارسة لضمان استمرارية العمل؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">اختبار البدائل بانتظام وتحديث الخطط</div>
-                    <div class="option" onclick="selectOption(this, false)">كتابة الخطة ثم نسيانها 📝😴</div>
-                    <div class="option" onclick="selectOption(this, false)">الاعتماد على الحظ</div>
-                    <div class="option" onclick="selectOption(this, false)">توظيف نفس الشخص لكل الأدوار</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q5 -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 5 من 14</span>
-                <span class="question-type">فريق التخطيط</span>
-            </div>
-            <div class="question-content">
-                <h2>كم مرة يجب مراجعة الخطة الاستراتيجية؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">سنوياً أو عند تغييرات جوهرية في السوق</div>
-                    <div class="option" onclick="selectOption(this, false)">مرة كل 5 سنوات</div>
-                    <div class="option" onclick="selectOption(this, false)">لا داعي للمراجعة أبداً</div>
-                    <div class="option" onclick="selectOption(this, false)">كلما تذكرنا 😅</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q6 -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 6 من 14</span>
-                <span class="question-type">فريق إدارة المخاطر</span>
-            </div>
-            <div class="question-content">
-                <h2>ما أخطر سيناريو قد يواجه الأعمال؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">فقدان القيادة الرئيسية + أزمة مالية + فقدان البيانات بآن واحد</div>
-                    <div class="option" onclick="selectOption(this, false)">انتهاء القهوة من المكتب ☕</div>
-                    <div class="option" onclick="selectOption(this, false)">موظف واحد في إجازة</div>
-                    <div class="option" onclick="selectOption(this, false)">الاجتماع المطول 😴</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q7 -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 7 من 14</span>
-                <span class="question-type">فريق التخطيط</span>
-            </div>
-            <div class="question-content">
-                <h2>أي من هذه يمثل تحديات في تنفيذ الاستراتيجية؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">قلة الموارد + مقاومة التغيير + عدم التواصل الفعال</div>
-                    <div class="option" onclick="selectOption(this, false)">فقط المال لا يكفي</div>
-                    <div class="option" onclick="selectOption(this, false)">الموظفون كسولون فقط</div>
-                    <div class="option" onclick="selectOption(this, false)">لا توجد تحديات في الواقع</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q8 -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 8 من 14</span>
-                <span class="question-type">فريق إدارة المخاطر</span>
-            </div>
-            <div class="question-content">
-                <h2>كيف نتعامل مع موظف أساسي يترك الشركة فجأة؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">توثيق المعارف + تدريب بديل + حوافز للبقاء مسبقاً</div>
-                    <div class="option" onclick="selectOption(this, false)">نبدأ البحث عن بديل ✔️</div>
-                    <div class="option" onclick="selectOption(this, false)">ننتظر حتى يترك عدة موظفين</div>
-                    <div class="option" onclick="selectOption(this, false)">لا يوجد موظف أساسي في الحقيقة 😄</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q9 -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 9 من 14</span>
-                <span class="question-type">فريق التخطيط</span>
-            </div>
-            <div class="question-content">
-                <h2>ما الذي يميز الشركات الناجحة استراتيجياً؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">التنبؤ بالمستقبل + التكيف السريع + قيادة واضحة</div>
-                    <div class="option" onclick="selectOption(this, false)">الحظ وحده</div>
-                    <div class="option" onclick="selectOption(this, false)">تجنب كل التغييرات</div>
-                    <div class="option" onclick="selectOption(this, false)">نسخ المنافسين بدقة</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q10 -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 10 من 14</span>
-                <span class="question-type">فريق إدارة المخاطر</span>
-            </div>
-            <div class="question-content">
-                <h2>ماذا تفعل إذا اكتشفت خطأ في البيانات المالية الأساسية؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">إبلاغ الإدارة فوراً + تحقيق + تصحيح + توثيق الدروس</div>
-                    <div class="option" onclick="selectOption(this, false)">تجاهلها وآمل أن لا يلاحظ أحد 🤐</div>
-                    <div class="option" onclick="selectOption(this, false)">إخبار صديقك في المكتب فقط</div>
-                    <div class="option" onclick="selectOption(this, false)">الانتظار حتى نهاية السنة</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q11 - Cultural Question -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 11 من 14</span>
-                <span class="question-type">سؤال ثقافي 🌍</span>
-            </div>
-            <div class="question-content">
-                <h2>في أي دولة عربية يقع مقر منظمة "التعاون الإسلامي"؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">السعودية (جدة)</div>
-                    <div class="option" onclick="selectOption(this, false)">مصر (القاهرة)</div>
-                    <div class="option" onclick="selectOption(this, false)">الإمارات (أبوظبي)</div>
-                    <div class="option" onclick="selectOption(this, false)">الأردن (عمّان)</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q12 - Funny Question -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 12 من 14</span>
-                <span class="question-type">سؤال فكاهي 😂</span>
-            </div>
-            <div class="question-content">
-                <h2>ماذا يقال عن الشركات التي لا تخطط للمستقبل؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">تخطط للفشل 📉</div>
-                    <div class="option" onclick="selectOption(this, false)">تعيش اللحظة الحاضرة فقط 🎉</div>
-                    <div class="option" onclick="selectOption(this, false)">أكثر مرونة وسعادة 😄</div>
-                    <div class="option" onclick="selectOption(this, false)">تعتمد على العرافين والنجوم 🌟</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q13 - Cultural Question -->
-        <div class="slide slide-team1">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team1">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 13 من 14</span>
-                <span class="question-type">سؤال ثقافي 🌍</span>
-            </div>
-            <div class="question-content">
-                <h2>كم عدد دول مجلس التعاون الخليجي؟</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">6 دول</div>
-                    <div class="option" onclick="selectOption(this, false)">5 دول</div>
-                    <div class="option" onclick="selectOption(this, false)">7 دول</div>
-                    <div class="option" onclick="selectOption(this, false)">4 دول</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q14 - Final Funny Question -->
-        <div class="slide slide-team2">
-            <div class="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
-            <div class="question-header team2">
-                <span class="question-number"><span class="mini-compass">🧭</span> السؤال 14 من 14</span>
-                <span class="question-type">سؤال ختامي فكاهي 🎯</span>
-            </div>
-            <div class="question-content">
-                <h2>كم اجتماع استغرق حتى توافقت على هذه اللعبة؟ 😄</h2>
-                <div class="options">
-                    <div class="option" onclick="selectOption(this, true)">أكثر من اللازم! لكنها تستحق ✨</div>
-                    <div class="option" onclick="selectOption(this, false)">اجتماع واحد كافٍ دائماً</div>
-                    <div class="option" onclick="selectOption(this, false)">اتفقنا بالصدفة 🎲</div>
-                    <div class="option" onclick="selectOption(this, false)">لم نتفق بعد 🤔</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 16: Final Scores -->
-        <div class="slide slide-score">
-            <div class="score-board">
-                <h2>🏆 النتائج النهائية 🏆</h2>
-                <div class="scores">
-                    <div class="score-card planning">
-                        <h3>🎯 فريق التخطيط</h3>
-                        <div class="score-value" id="team1-final">0</div>
-                        <p>نقطة</p>
-                    </div>
-                    <div class="score-card risk">
-                        <h3>🛡️ فريق إدارة المخاطر</h3>
-                        <div class="score-value" id="team2-final">0</div>
-                        <p>نقطة</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 17: Winner -->
-        <div class="slide slide-end">
-            <div class="winner-content">
-                <h1>🎊 تهانينا! 🎊</h1>
-                <div class="trophy">🏆</div>
-                <div class="winner-name" id="winner-name">الفريق الفائز</div>
-                <p style="font-size: 1.3rem; color: #333; margin-top: 30px;">شكراً لمشاركتكم! 👏</p>
-                <p style="font-size: 1.1rem; color: #666; margin-top: 20px;">استراتيجية جيدة + إدارة مخاطر فعالة = نجاح مستدام ✨</p>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav-buttons">
-            <button class="btn-prev" onclick="prevSlide()">← السابق</button>
-            <div class="slide-counter"><span id="current-slide">1</span> / 17</div>
-            <button class="btn-next" onclick="nextSlide()">التالي →</button>
-        </div>
+        <div id="feedback" class="feedback-overlay"></div>
     </div>
 
+    <!-- Audio Elements -->
+    <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2010/2010-preview.mp3"></audio>
+    <audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+    <audio id="snd-tick" src="https://assets.mixkit.co/active_storage/sfx/2555/2555-preview.mp3" loop></audio>
+
     <script>
-        let currentSlide = 0;
-        let team1Score = 0;
-        let team2Score = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+        const questions = [
+            {q: "ما هو الهدف الأساسي من التخطيط الاستراتيجي؟", a: ["تحديد الاتجاه المستقبلي للمنظمة", "إصدار تقارير شهرية", "الإنفاق العشوائي", "تقليل الموظفين"], c: 0},
+            {q: "كيف نتعامل مع تعطل نظام البيانات؟", a: ["نأمل أن لا يحدث", "خطة طوارئ مسبقة", "نستدعي الفني لاحقاً", "نغلق المكتب"], c: 1},
+            {q: "أي من هذه مكونات الخطة الاستراتيجية؟", a: ["الرؤية والرسالة والأهداف", "أحلام عشوائية", "الميزانية فقط", "تقليد المنافسين"], c: 0},
+            {q: "ما أفضل ممارسة لضمان استمرارية العمل؟", a: ["اختبار البدائل بانتظام", "كتابة الخطة ونسيانها", "الاعتماد على الحظ", "توظيف شخص واحد"], c: 0},
+            {q: "كم مرة يجب مراجعة الخطة؟", a: ["سنوياً أو عند تغييرات كبرى", "كل 5 سنوات", "لا داعي للمراجعة", "كلما تذكرنا"], c: 0},
+            {q: "ما أخطر سيناريو يواجه الأعمال؟", a: ["فقدان القيادة والبيانات معاً", "انتهاء القهوة", "موظف في إجازة", "اجتماع مطول"], c: 0},
+            {q: "تحديات تنفيذ الاستراتيجية؟", a: ["قلة الموارد ومقاومة التغيير", "المال فقط", "الموظفون فقط", "لا توجد تحديات"], c: 0},
+            {q: "موظف أساسي ترك الشركة فجأة؟", a: ["نقل المعرفة والتدريب المسبق", "نبحث لاحقاً", "ننتظر", "لا يوجد موظف أساسي"], c: 0},
+            {q: "بما تتمايز الشركات الناجحة؟", a: ["التنبؤ والتكيف والقيادة", "الحظ", "تجنب التغيير", "النسخ"], c: 0},
+            {q: "خطأ في بيانات مالية أساسية؟", a: ["إبلاغ الإدارة والتحقيق فوراً", "تجاهلها", "إخبار صديق", "انتظار نهاية السنة"], c: 0},
+            {q: "مقر منظمة التعاون الإسلامي؟", a: ["جدة", "القاهرة", "أبوظبي", "عمان"], c: 0},
+            {q: "الشركات التي لا تخطط؟", a: ["تخطط للفشل", "تعيش اللحظة", "أكثر سعادة", "تعتمد على النجوم"], c: 0},
+            {q: "عدد دول مجلس التعاون؟", a: ["6", "5", "7", "4"], c: 0},
+            {q: "كم اجتماعاً استغرقت هذه اللعبة؟", a: ["أكثر من اللازم!", "واحد", "بالصدفة", "لم نتفق"], c: 0}
+        ];
 
-        function showSlide(n) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[n].classList.add('active');
-            document.getElementById('current-slide').textContent = n + 1;
+        let s1 = 0, s2 = 0;
+        let answered = new Set();
+        let timer;
 
-            // Update navigation buttons
-            const prevBtn = document.querySelector('.btn-prev');
-            const nextBtn = document.querySelector('.btn-next');
-
-            prevBtn.disabled = n === 0;
-            nextBtn.disabled = n === totalSlides - 1;
-
-            // Remove all selected states when moving slides
-            if (n < totalSlides - 2) {
-                document.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('correct', 'incorrect');
-                    opt.onclick = opt.onclick; // Re-enable click
-                });
+        function goToMap() {
+            showSlide('slide-map');
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for(let i=1; i<=14; i++) {
+                const b = document.createElement('div');
+                b.className = 'q-box' + (answered.has(i-1) ? ' disabled' : '');
+                b.textContent = i;
+                if(!answered.has(i-1)) b.onclick = () => startQ(i-1);
+                grid.appendChild(b);
             }
         }
 
-        function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-                showSlide(currentSlide);
-            }
+        function showSlide(id) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                showSlide(currentSlide);
-            }
-        }
-
-        function selectOption(element, isCorrect) {
-            // Disable all options in this question
-            const options = element.parentElement.querySelectorAll('.option');
-            options.forEach(opt => {
-                opt.onclick = null;
-                opt.style.cursor = 'default';
+        function startQ(idx) {
+            const data = questions[idx];
+            showSlide('slide-question');
+            const teamNode = document.getElementById('q-team');
+            const isTeam1 = (answered.size % 2 === 0);
+            teamNode.textContent = isTeam1 ? "فريق التخطيط 🎯" : "فريق المخاطر 🛡️";
+            teamNode.style.background = isTeam1 ? "#fee7d1" : "#fce4ec";
+            
+            document.getElementById('q-text').textContent = data.q;
+            const optContainer = document.getElementById('q-options');
+            optContainer.innerHTML = '';
+            data.a.forEach((txt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = txt;
+                btn.onclick = () => check(idx, i, btn);
+                optContainer.appendChild(btn);
             });
 
-            // Show result
-            if (isCorrect) {
-                element.classList.add('correct');
-                // Determine which team gets the point based on current slide
-                if (currentSlide >= 1 && currentSlide <= 14) {
-                    // Odd slides (1,3,5,7,9,11,13) = Team 1
-                    // Even slides (2,4,6,8,10,12,14) = Team 2
-                    if ((currentSlide - 1) % 2 === 0) {
-                        team1Score++;
-                    } else {
-                        team2Score++;
-                    }
+            // Timer
+            let time = 100;
+            const bar = document.getElementById('t-bar');
+            document.getElementById('snd-tick').play();
+            clearInterval(timer);
+            timer = setInterval(() => {
+                time -= 2;
+                bar.style.width = time + '%';
+                if(time <= 0) {
+                    clearInterval(timer);
+                    check(idx, -1);
                 }
-                // Show all correct options
-                options.forEach(opt => {
-                    if (opt.textContent.includes(element.textContent) || 
-                        opt.classList.contains('correct')) {
-                        opt.classList.add('correct');
-                    }
-                });
+            }, 500);
+        }
+
+        function check(qIdx, choice, btn) {
+            clearInterval(timer);
+            document.getElementById('snd-tick').pause();
+            document.getElementById('snd-tick').currentTime = 0;
+            
+            const correct = questions[qIdx].c;
+            const feedback = document.getElementById('feedback');
+            feedback.style.display = 'flex';
+            
+            const isTeam1 = (answered.size % 2 === 0);
+
+            if(choice === correct) {
+                if(btn) btn.classList.add('correct');
+                feedback.textContent = "✅ رائع!";
+                document.getElementById('snd-correct').play();
+                if(isTeam1) s1++; else s2++;
             } else {
-                element.classList.add('incorrect');
-                // Show correct answer
-                options.forEach(opt => {
-                    if (opt.classList.contains('correct') === false && 
-                        Array.from(opt.parentElement.children).indexOf(opt) === 
-                        Array.from(opt.parentElement.children).indexOf(
-                            Array.from(opt.parentElement.children).find(o => {
-                                // Find the option with onclick that returns true
-                                return o !== element;
-                            })
-                        )) {
-                        // Find correct one by checking the others
-                    }
-                });
-                // Highlight all correct answers
-                options.forEach(opt => {
-                    const onclickStr = opt.getAttribute('onclick');
-                    if (onclickStr && onclickStr.includes('true')) {
-                        opt.classList.add('correct');
-                    }
-                });
+                if(btn) btn.classList.add('incorrect');
+                feedback.textContent = "❌ خطأ";
+                document.getElementById('snd-wrong').play();
             }
 
-            // Update final scores when reaching the end
-            if (currentSlide === 14) {
-                setTimeout(() => {
-                    document.getElementById('team1-final').textContent = team1Score;
-                    document.getElementById('team2-final').textContent = team2Score;
-                    
-                    // Determine winner
-                    let winnerName = 'تعادل مثير! 🤝';
-                    if (team1Score > team2Score) {
-                        winnerName = 'فريق التخطيط 🎯';
-                    } else if (team2Score > team1Score) {
-                        winnerName = 'فريق إدارة المخاطر 🛡️';
-                    }
-                    document.getElementById('winner-name').textContent = winnerName;
-                }, 500);
-            }
+            answered.add(qIdx);
+            document.getElementById('s1').textContent = s1;
+            document.getElementById('s2').textContent = s2;
+
+            setTimeout(() => {
+                feedback.style.display = 'none';
+                if(answered.size === 14) finish();
+                else goToMap();
+            }, 2000);
         }
 
-        
-        // Generate floating stars
-        const starsContainer = document.getElementById('stars-container');
-        const starIcons = ['⭐', '✨', '🌟'];
-        for (let i = 0; i < 30; i++) {
-            const star = document.createElement('div');
-            star.className = 'star-icon';
-            star.textContent = starIcons[Math.floor(Math.random() * starIcons.length)];
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.fontSize = (Math.random() * 20 + 10) + 'px';
-            star.style.animationDelay = (Math.random() * 4) + 's';
-            starsContainer.appendChild(star);
+        function finish() {
+            showSlide('slide-score');
+            const txt = s1 > s2 ? "فريق التخطيط هو الفائز! 🏆" : (s2 > s1 ? "فريق المخاطر هو الفائز! 🏆" : "تعادل رائع! 🤝");
+            document.getElementById('winner-text').textContent = txt;
         }
-
-        // Initialize
-        showSlide(0);
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') prevSlide();
-            if (e.key === 'ArrowRight') nextSlide();
-        });
     </script>
-<div id="feedback" class="feedback-pop"></div>
 </body>
 </html>
