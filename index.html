@@ -17,40 +17,26 @@
         }
 
         .game-container {
-            width: 90%; max-width: 900px; height: 80vh;
-            background: rgba(255, 255, 255, 0.98); border-radius: 30px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+            width: 95%; max-width: 1100px; height: 88vh;
+            background: rgba(255, 255, 255, 0.97); border-radius: 30px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.15);
             position: relative; display: flex; flex-direction: column; overflow: hidden;
             border: 1px solid rgba(255,255,255,0.8);
         }
 
-        .slide { display: none; width: 100%; height: 100%; padding: 40px; flex-direction: column; align-items: center; justify-content: center; animation: slideUp 0.4s ease; }
+        .slide { display: none; width: 100%; height: 100%; padding: 30px; flex-direction: column; align-items: center; justify-content: center; animation: slideUp 0.4s ease; }
         .slide.active { display: flex; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Modern Grid */
-        .grid-ui {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
-            width: 100%; max-width: 600px;
-        }
-        .q-button {
-            aspect-ratio: 1; background: #fff; border: 4px solid #00bcd4; border-radius: 18px;
-            font-size: 2.2rem; font-weight: 800; color: #00838f; cursor: pointer; transition: 0.2s;
-            box-shadow: 0 8px 0 #0097a7; text-shadow: 1px 1px 0 #fff;
-        }
-        .q-button:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #0097a7; background: #e0f7fa; }
-        .q-button:active { transform: translateY(5px); box-shadow: 0 2px 0 #0097a7; }
-        .q-button.disabled { background: #cfd8dc; border-color: #90a4ae; color: #607d8b; box-shadow: 0 4px 0 #78909c; cursor: not-allowed; transform: none; }
-
         /* Timer */
         .progress-box { width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
-        .progress-bar { width: 100%; height: 100%; background: #00bcd4; transition: width 0.5s linear; }
+        .progress-bar { width: 100%; height: 100%; background: #00bcd4; transition: width 0.2s linear; }
 
-        .question-h { font-size: 2.5rem; color: #1a237e; text-align: center; margin-bottom: 40px; line-height: 1.3; }
-        .opts-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+        .question-h { font-size: 2.2rem; color: #1a237e; text-align: center; margin-bottom: 35px; line-height: 1.4; }
+        .opts-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 700px; }
         .opt-item {
             padding: 22px; background: #f5f5f5; border: 2px solid #e0e0e0; border-radius: 15px;
-            font-size: 1.3rem; font-weight: 700; cursor: pointer; transition: 0.2s; color: #37474f;
+            font-size: 1.3rem; font-weight: 700; cursor: pointer; transition: 0.2s; color: #37474f; text-align: center;
         }
         .opt-item:hover { background: #e3f2fd; border-color: #2196f3; color: #0d47a1; }
         .opt-item.correct { background: #c8e6c9; border-color: #4caf50; color: #1b5e20; }
@@ -61,160 +47,205 @@
         .btn-ready { padding: 18px 50px; background: #00bcd4; color: white; border: none; border-radius: 15px; font-size: 1.6rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #0097a7; }
         .btn-ready:hover { background: #26c6da; }
 
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:none; align-items:center; justify-content:center; font-size:6rem; z-index:100; backdrop-filter: blur(3px); }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:none; align-items:center; justify-content:center; font-size:7rem; z-index:100; backdrop-filter: blur(3px); }
 
-        /* Wheel & Grid Layout */
+        /* ===== MAIN GAME LAYOUT ===== */
         .game-layout {
             display: flex;
             width: 100%;
             height: 100%;
-            padding: 20px;
-            gap: 40px;
+            gap: 30px;
             align-items: center;
+            padding: 10px;
         }
 
+        /* ===== WHEEL SECTION ===== */
         .wheel-section {
-            flex: 1;
+            flex: 1.1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
+            gap: 15px;
         }
 
+        .wheel-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 36px solid #d81b60;
+            z-index: 20;
+            filter: drop-shadow(0 3px 6px rgba(216,27,96,0.4));
+        }
+
+        .wheel-canvas-container {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 8px solid #1a237e;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.25), inset 0 0 20px rgba(255,255,255,0.1);
+            overflow: hidden;
+            background: #fff;
+        }
+
+        #wheelCanvas {
+            width: 320px;
+            height: 320px;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 40%, #1a237e 100%);
+            border: 3px solid #1a237e;
+            z-index: 5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .spin-btn {
+            padding: 13px 35px;
+            background: linear-gradient(135deg, #d81b60, #ad1457);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.4);
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .spin-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(216, 27, 96, 0.5); }
+        .spin-btn:disabled { background: linear-gradient(135deg, #ccc, #aaa); cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .picked-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #d81b60;
+            min-height: 2rem;
+            text-align: center;
+            background: #fce4ec;
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: 2px solid #f48fb1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .picked-name.empty {
+            background: #f5f5f5;
+            border-color: #e0e0e0;
+            color: #9e9e9e;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* ===== GRID SECTION ===== */
         .grid-section {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 15px;
         }
 
-        /* Spinning Wheel CSS */
-        .wheel-container {
-            width: 350px;
-            height: 350px;
-            position: relative;
-            border-radius: 50%;
-            border: 8px solid #1a237e;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-            background: #fff;
-        }
-
-        #wheel {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #d81b60;
-            z-index: 10;
-        }
-
-        .segment {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-origin: 50% 50%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #1a237e;
-        }
-
-        .spin-btn {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: #d81b60;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.3);
-            transition: 0.2s;
-        }
-        .spin-btn:hover { background: #ad1457; transform: scale(1.05); }
-        .spin-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
-
-        .picked-name {
-            margin-top: 15px;
+        .grid-title {
             font-size: 1.5rem;
             font-weight: 800;
-            color: #d81b60;
-            height: 2rem;
+            color: #1a237e;
+            text-align: center;
         }
 
         .grid-ui {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 12px;
             width: 100%;
+            max-width: 380px;
         }
 
         .q-square {
             aspect-ratio: 1;
-            background: #fff;
-            border: 3px solid #1a237e;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #fff, #e8eaf6);
+            border: 3px solid #3949ab;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #1a237e;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.25s;
+            box-shadow: 0 4px 10px rgba(26,35,126,0.1);
         }
-        .q-square:hover { transform: translateY(-5px); background: #e8eaf6; }
-        .q-square.disabled { background: #eee; border-color: #bbb; color: #bbb; cursor: not-allowed; pointer-events: none; }
-        .q-square.active { border-color: #d81b60; color: #d81b60; box-shadow: 0 0 15px rgba(216, 27, 96, 0.2); }
+        .q-square:hover { transform: translateY(-5px) scale(1.05); background: linear-gradient(135deg, #e8eaf6, #c5cae9); box-shadow: 0 8px 20px rgba(26,35,126,0.2); }
+        .q-square.disabled { background: #eceff1; border-color: #b0bec5; color: #90a4ae; cursor: not-allowed; pointer-events: none; box-shadow: none; transform: none; }
+        .q-square.active { border-color: #d81b60; color: #d81b60; background: linear-gradient(135deg, #fce4ec, #f8bbd0); box-shadow: 0 0 20px rgba(216, 27, 96, 0.3); animation: pulse 1s infinite; }
+        .q-square.done { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-color: #81c784; color: #388e3c; cursor: not-allowed; pointer-events: none; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(216, 27, 96, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(216, 27, 96, 0.6); }
+        }
+
+        /* Win screen */
+        .win-emoji { font-size: 9rem; margin: 20px 0; animation: bounce 1s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="game-container">
-        <div id="s-start" class="slide active">
-            <h1 style="font-size: 4rem; color: #1a237e; margin-bottom: 20px;">🏆 التحدي الاستراتيجي</h1>
-            <p style="font-size: 1.4rem; color: #546e7a; margin-bottom: 40px;">فريق التخطيط ضد فريق إدارة المخاطر</p>
-            <button class="btn-ready" onclick="goMap()">دخول اللعبة</button>
-        </div>
 
-        <div id="s-map" class="slide">
+        <!-- Main Game: Wheel + Grid -->
+        <div id="s-map" class="slide active">
             <div class="game-layout">
-                <!-- Wheel Section (Right) -->
+                <!-- Wheel Section -->
                 <div class="wheel-section">
-                    <div class="wheel-pointer"></div>
-                    <div class="wheel-container">
-                        <div id="wheel"></div>
+                    <div class="wheel-wrapper">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel-canvas-container">
+                            <canvas id="wheelCanvas" width="320" height="320"></canvas>
+                        </div>
+                        <div class="wheel-center"></div>
                     </div>
-                    <button id="spin-btn" class="spin-btn" onclick="spinWheel()">اضغط للدوران 🎡</button>
-                    <div id="picked-display" class="picked-name"></div>
+                    <button id="spin-btn" class="spin-btn" onclick="spinWheel()">🎡 اضغط للدوران</button>
+                    <div id="picked-display" class="picked-name empty">في انتظار الدوران...</div>
                 </div>
 
-                <!-- Grid Section (Left) -->
+                <!-- Grid Section -->
                 <div class="grid-section">
-                    <h2 style="color: #1a237e; margin-bottom: 20px;">اختر سؤالاً 🧩</h2>
+                    <h2 class="grid-title">🧩 اختر سؤالاً</h2>
                     <div id="grid-list" class="grid-ui"></div>
                 </div>
             </div>
         </div>
 
+        <!-- Question Slide -->
         <div id="s-q" class="slide">
             <div class="progress-box"><div id="p-bar" class="progress-bar"></div></div>
             <div id="t-name" class="team-tag"></div>
@@ -222,25 +253,38 @@
             <div id="o-list" class="opts-box"></div>
         </div>
 
+        <!-- Win Screen -->
         <div id="s-win" class="slide">
             <h1 id="win-msg" style="font-size: 3.5rem; text-align: center; color: #1a237e;"></h1>
-            <div style="font-size: 10rem; margin: 30px 0;">🎉</div>
+            <div class="win-emoji">🎉</div>
             <button class="btn-ready" onclick="location.reload()">لعب مرة أخرى</button>
         </div>
 
         <div id="msg-box" class="overlay"></div>
     </div>
 
-    <!-- Clearer Game Sounds -->
     <audio id="snd-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
     <audio id="snd-fail" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
-    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
     <script>
-        // Supabase Configuration
+        // Supabase
         const SUPABASE_URL = 'https://peppyvyilwbiynvzjffk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlcHB5dnlpbHdiaXludnpqZmZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMDYwMzIsImV4cCI6MjA5MDg4MjAzMn0.CgtFQE1HfxxF5lMhxrCNzKRCr8M-BMMwj1jOwbVPsuw'; // اتركها كما هي حالياً وسيتم ربطها عبر Vercel
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlcHB5dnlpbHdiaXludnpqZmZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMDYwMzIsImV4cCI6MjA5MDg4MjAzMn0.CgtFQE1HfxxF5lMhxrCNzKRCr8M-BMMwj1jOwbVPsuw';
         const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        // State
+        let done = new Set();
+        let qTimer = null;
+        let isSpinning = false;
+        let selectedPlayer = null;
+        let currentRotation = 0;
+        let playedPlayers = new Set();
+
+        let employees = [
+            "عائشة الكواري", "شريفة المنصوري", "ريم المحمد", "مريم القوز", "ندى اليامي",
+            "ياسمين العجي", "لولوه آل ثاني", "رامي أبو زيتون", "وصال العنزي", "فاطمة الكبيسي",
+            "عائشة الكعبي", "مريم الغانم", "المها المالكي", "موضي الكواري", "نورة السويدي"
+        ];
 
         let dataSet = [
             {q: "ما هو الهدف الأساسي من التخطيط الاستراتيجي؟", a: ["تحديد الاتجاه المستقبلي للمنظمة", "إصدار تقارير شهرية", "الإنفاق العشوائي", "تقليل الموظفين"], c: 0},
@@ -261,168 +305,167 @@
             {q: "سؤال إضافي 2 (يمكنك تعديله لاحقاً)", a: ["خيار 1", "خيار 2", "خيار 3", "خيار 4"], c: 0}
         ];
 
-        async function loadQuestions() {
-            if (!supabase || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') return;
-            try {
-                const { data, error } = await supabase.from('game_questions').select('*').order('id', { ascending: true });
-                if (data && data.length > 0) {
-                    dataSet = data.map(item => ({
-                        q: item.question,
-                        a: item.options,
-                        c: item.correct_index
-                    }));
-                }
-            } catch (err) {
-                console.error("Error fetching questions:", err);
-            }
-        }
-
-        // Load questions on start
-        loadQuestions();
-
-        let employees = [
-            "عائشة الكواري", "شريفة المنصوري", "ريم المحمد", "مريم القوز", "ندى اليامي",
-            "ياسمين العجي", "لولوه آل ثاني", "رامي أبو زيتون", "وصال العنزي", "فاطمة الكبيسي",
-            "عائشة الكعبي", "مريم الغانم", "المها المالكي", "موضي الكواري", "نورة السويدي"
+        // ===== WHEEL DRAWING =====
+        const COLORS = [
+            '#e3f2fd','#fce4ec','#f3e5f5','#e8f5e9','#fff8e1',
+            '#e0f7fa','#fbe9e7','#f1f8e9','#ede7f6','#e8eaf6',
+            '#ffecb3','#dcedc8','#b3e5fc','#f8bbd0','#d1c4e9'
+        ];
+        const BORDER_COLORS = [
+            '#1e88e5','#e91e63','#9c27b0','#43a047','#fb8c00',
+            '#00acc1','#f4511e','#7cb342','#8e24aa','#3949ab',
+            '#f9a825','#558b2f','#0288d1','#d81b60','#5e35b1'
         ];
 
-        let playedPlayers = new Set();
-        let currentRotation = 0;
-        let isSpinning = false;
-        let selectedPlayer = null;
+        function drawWheel(rotation = 0) {
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = cx - 2;
+            const numSeg = employees.length;
+            const segAngle = (2 * Math.PI) / numSeg;
 
-        async function loadData() {
-            // Load Employees from Supabase
-            if (supabase && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
-                const { data: empData } = await supabase.from('employees').select('name');
-                if (empData && empData.length > 0) employees = empData.map(e => e.name);
-
-                // Load Questions
-                const { data: qData } = await supabase.from('game_questions').select('*').order('id', { ascending: true });
-                if (qData && qData.length > 0) {
-                    dataSet = qData.map(item => ({
-                        q: item.question,
-                        a: item.options,
-                        c: item.correct_index
-                    }));
-                }
-            }
-            initWheel();
-            initGrid();
-        }
-
-        function initWheel() {
-            const wheel = document.getElementById('wheel');
-            wheel.innerHTML = '';
-            const angle = 360 / employees.length;
-            const colors = ['#e3f2fd', '#fce4ec', '#f3e5f5', '#efebe9', '#f1f8e9'];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             employees.forEach((name, i) => {
-                const seg = document.createElement('div');
-                seg.className = 'segment';
-                seg.style.transform = `rotate(${i * angle}deg)`;
-                seg.innerHTML = `<span style="transform: rotate(${-angle/2}deg)">${name}</span>`;
-                seg.style.background = `conic-gradient(from 0deg at 50% 50%, ${colors[i % colors.length]} ${angle}deg, transparent ${angle}deg)`;
-                // Alternative styling for segment visual
-                seg.style.clipPath = `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.tan((angle * Math.PI) / 180)}% 0%)`;
-                if(angle > 90) seg.style.clipPath = 'none'; // fallback
-                
-                // Simpler visual for static HTML
-                seg.style.background = 'transparent';
-                const text = document.createElement('div');
-                text.textContent = name;
-                text.style.position = 'absolute';
-                text.style.right = '10px';
-                text.style.transform = `rotate(${angle/2}deg)`;
-                seg.appendChild(text);
+                const startAngle = rotation + i * segAngle;
+                const endAngle = startAngle + segAngle;
 
-                // Divider line
-                const line = document.createElement('div');
-                line.style.position = 'absolute';
-                line.style.width = '50%';
-                line.style.height = '2px';
-                line.style.background = '#1a237e22';
-                line.style.top = '50%';
-                line.style.left = '50%';
-                line.style.transformOrigin = '0% 50%';
-                wheel.appendChild(line);
+                // Segment fill
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = COLORS[i % COLORS.length];
+                ctx.fill();
+                ctx.strokeStyle = BORDER_COLORS[i % BORDER_COLORS.length];
+                ctx.lineWidth = 2;
+                ctx.stroke();
 
-                wheel.appendChild(seg);
+                // Text
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(startAngle + segAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#1a237e';
+                ctx.font = 'bold 11px Tajawal, sans-serif';
+                ctx.fillText(name, radius - 12, 4);
+                ctx.restore();
             });
+
+            // Center circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#1a237e';
+            ctx.lineWidth = 3;
+            ctx.stroke();
         }
 
+        // ===== WHEEL SPIN =====
+        let spinStartTime = null;
+        let spinDuration = 4000;
+        let spinStartAngle = 0;
+        let spinTargetAngle = 0;
+        let spinAnimFrame = null;
+
+        function easeOut(t) {
+            return 1 - Math.pow(1 - t, 4);
+        }
+
+        function animateSpin(timestamp) {
+            if (!spinStartTime) spinStartTime = timestamp;
+            const elapsed = timestamp - spinStartTime;
+            const progress = Math.min(elapsed / spinDuration, 1);
+            const eased = easeOut(progress);
+            const current = spinStartAngle + (spinTargetAngle - spinStartAngle) * eased;
+            drawWheel(current);
+
+            if (progress < 1) {
+                spinAnimFrame = requestAnimationFrame(animateSpin);
+            } else {
+                isSpinning = false;
+                currentRotation = current;
+                const availableIndices = employees.map((_, i) => i).filter(i => !playedPlayers.has(i));
+                // Find which segment is at top (pointer position = -PI/2)
+                const angle = (2 * Math.PI) / employees.length;
+                const normalizedAngle = ((current % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+                const idx = Math.floor(((2 * Math.PI - normalizedAngle) % (2 * Math.PI)) / angle) % employees.length;
+                selectedPlayer = employees[idx];
+                playedPlayers.add(idx);
+
+                const display = document.getElementById('picked-display');
+                display.classList.remove('empty');
+                display.textContent = '🎯 الدور على: ' + selectedPlayer;
+                document.getElementById('spin-btn').disabled = false;
+                document.querySelectorAll('.q-square:not(.disabled):not(.done)').forEach(s => s.classList.add('active'));
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            const availableIndices = employees.map((_, i) => i).filter(i => !playedPlayers.has(i));
+            if (availableIndices.length === 0) {
+                alert('تم اختيار جميع الموظفين!');
+                return;
+            }
+
+            isSpinning = true;
+            selectedPlayer = null;
+            document.getElementById('spin-btn').disabled = true;
+            const display = document.getElementById('picked-display');
+            display.classList.add('empty');
+            display.textContent = 'جاري الاختيار...';
+            document.querySelectorAll('.q-square').forEach(s => s.classList.remove('active'));
+
+            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+            const angle = (2 * Math.PI) / employees.length;
+            // Target: segment randomIndex should be at top (angle = -PI/2 from 0)
+            const segCenter = randomIndex * angle + angle / 2;
+            const extraSpins = (5 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
+            // We want: after rotation, top pointer = -PI/2 corresponds to segment
+            const targetOffset = (2 * Math.PI - segCenter) + (3 * Math.PI / 2);
+            spinStartAngle = currentRotation;
+            spinTargetAngle = currentRotation + extraSpins + ((targetOffset - currentRotation) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            spinStartTime = null;
+
+            if (spinAnimFrame) cancelAnimationFrame(spinAnimFrame);
+            spinAnimFrame = requestAnimationFrame(animateSpin);
+        }
+
+        // ===== GRID =====
         function initGrid() {
             const g = document.getElementById('grid-list');
             g.innerHTML = '';
-            for(let i=1; i<=16; i++) {
+            for (let i = 1; i <= 16; i++) {
                 const b = document.createElement('div');
-                b.className = 'q-square' + (done.has(i-1) ? ' disabled' : '');
-                b.textContent = i;
-                if(!done.has(i-1)) {
+                if (done.has(i - 1)) {
+                    b.className = 'q-square done';
+                    b.textContent = '✓';
+                } else {
+                    b.className = 'q-square';
+                    b.textContent = i;
                     b.onclick = () => {
-                        if(!selectedPlayer) {
-                            alert("يرجى تدوير العجلة لاختيار الموظف أولاً!");
+                        if (!selectedPlayer) {
+                            alert('يرجى تدوير العجلة لاختيار الموظف أولاً!');
                             return;
                         }
-                        showQ(i-1);
-                    }
+                        showQ(i - 1);
+                    };
                 }
                 g.appendChild(b);
             }
         }
 
-        function spinWheel() {
-            if (isSpinning || playedPlayers.size === employees.length) return;
-            
-            isSpinning = true;
-            document.getElementById('spin-btn').disabled = true;
-            document.getElementById('picked-display').textContent = "جاري الاختيار...";
-
-            const availableIndices = employees.map((_, i) => i).filter(i => !playedPlayers.has(i));
-            if (availableIndices.length === 0) {
-                alert("تم اختيار جميع الموظفين!");
-                return;
-            }
-
-            const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-            const anglePerSegment = 360 / employees.length;
-            
-            // Calculate final rotation
-            // We want the winner segment to be at the top (270 degrees usually in CSS transform)
-            // But our wheel segments start at 0. 
-            const targetAngle = 360 - (randomIndex * anglePerSegment) - (anglePerSegment / 2);
-            const extraSpins = (5 + Math.floor(Math.random() * 5)) * 360;
-            currentRotation += extraSpins + (targetAngle - (currentRotation % 360));
-
-            document.getElementById('wheel').style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                isSpinning = false;
-                selectedPlayer = employees[randomIndex];
-                playedPlayers.add(randomIndex);
-                document.getElementById('picked-display').textContent = "الدور على: " + selectedPlayer;
-                document.getElementById('spin-btn').disabled = false;
-                // Highlight that grid is ready
-                document.querySelectorAll('.q-square:not(.disabled)').forEach(s => s.classList.add('active'));
-            }, 4100);
-        }
-
-        function goMap() {
-            sd('s-map');
-            initGrid();
-        }
-
-        function sd(id) {
-            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
+        // ===== QUESTION =====
         function showQ(idx) {
             sd('s-q');
             const tag = document.getElementById('t-name');
-            tag.textContent = "الموظف: " + selectedPlayer;
-            tag.style.background = "#e8eaf6";
-            tag.style.color = "#1a237e";
+            tag.textContent = '👤 ' + selectedPlayer;
+            tag.style.background = '#e8eaf6';
+            tag.style.color = '#1a237e';
 
             document.getElementById('q-val').textContent = dataSet[idx].q;
             const ol = document.getElementById('o-list');
@@ -437,11 +480,12 @@
 
             let t = 100;
             const bar = document.getElementById('p-bar');
+            bar.style.width = '100%';
             clearInterval(qTimer);
             qTimer = setInterval(() => {
                 t -= 1;
                 bar.style.width = t + '%';
-                if(t <= 0) { clearInterval(qTimer); verify(idx, -1); }
+                if (t <= 0) { clearInterval(qTimer); verify(idx, -1, null); }
             }, 200);
         }
 
@@ -451,32 +495,60 @@
             const m = document.getElementById('msg-box');
             m.style.display = 'flex';
 
-            if(c === cor) {
-                if(el) el.classList.add('correct');
-                m.textContent = "✅"; m.style.color = "#4caf50";
+            if (c === cor) {
+                if (el) el.classList.add('correct');
+                m.textContent = '✅'; m.style.color = '#4caf50';
                 document.getElementById('snd-win').play();
             } else {
-                if(el) el.classList.add('incorrect');
-                m.textContent = "❌"; m.style.color = "#f44336";
+                if (el) el.classList.add('incorrect');
+                // Show correct answer
+                const opts = document.querySelectorAll('.opt-item');
+                if (opts[cor]) opts[cor].classList.add('correct');
+                m.textContent = '❌'; m.style.color = '#f44336';
                 document.getElementById('snd-fail').play();
             }
 
             done.add(qI);
-            selectedPlayer = null; // Reset for next spin
+            selectedPlayer = null;
             document.querySelectorAll('.q-square').forEach(s => s.classList.remove('active'));
 
             setTimeout(() => {
                 m.style.display = 'none';
-                if(done.size === 16) {
+                if (done.size === 16) {
                     sd('s-win');
-                    document.getElementById('win-msg').textContent = "انتهت اللعبة! شكراً لجميع الموظفين.";
-                } else goMap();
-            }, 1200);
+                    document.getElementById('win-msg').textContent = 'انتهت اللعبة! شكراً لجميع المشاركين 🏆';
+                } else {
+                    sd('s-map');
+                    initGrid();
+                }
+            }, 1500);
         }
 
-        // Initial loading on window load
+        function sd(id) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // ===== LOAD DATA =====
+        async function loadData() {
+            if (supabase && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+                try {
+                    const { data: empData } = await supabase.from('employees').select('name');
+                    if (empData && empData.length > 0) employees = empData.map(e => e.name);
+
+                    const { data: qData } = await supabase.from('game_questions').select('*').order('id', { ascending: true });
+                    if (qData && qData.length > 0) {
+                        dataSet = qData.map(item => ({ q: item.question, a: item.options, c: item.correct_index }));
+                    }
+                } catch (err) {
+                    console.error('Supabase error:', err);
+                }
+            }
+            drawWheel(0);
+            initGrid();
+        }
+
         window.onload = loadData;
     </script>
 </body>
 </html>
- 
