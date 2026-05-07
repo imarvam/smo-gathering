@@ -63,6 +63,7 @@
 
         .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display:none; align-items:center; justify-content:center; font-size:6rem; z-index:100; backdrop-filter: blur(3px); }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="game-container">
@@ -103,7 +104,12 @@
     <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
     <script>
-        const dataSet = [
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://peppyvyilwbiynvzjffk.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // اتركها كما هي حالياً وسيتم ربطها عبر Vercel
+        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        let dataSet = [
             {q: "ما هو الهدف الأساسي من التخطيط الاستراتيجي؟", a: ["تحديد الاتجاه المستقبلي للمنظمة", "إصدار تقارير شهرية", "الإنفاق العشوائي", "تقليل الموظفين"], c: 0},
             {q: "كيف نتعامل مع تعطل نظام البيانات؟", a: ["نأمل أن لا يحدث", "خطة طوارئ مسبقة", "نستدعي الفني لاحقاً", "نغلق المكتب"], c: 1},
             {q: "أي من هذه مكونات الخطة الاستراتيجية؟", a: ["الرؤية والرسالة والأهداف", "أحلام عشوائية", "الميزانية فقط", "تقليد المنافسين"], c: 0},
@@ -117,8 +123,29 @@
             {q: "مقر منظمة التعاون الإسلامي؟", a: ["جدة", "القاهرة", "أبوظبي", "عمان"], c: 0},
             {q: "الشركات التي لا تخطط؟", a: ["تخطط للفشل", "تعيش اللحظة", "أكثر سعادة", "تعتمد على النجوم"], c: 0},
             {q: "عدد دول مجلس التعاون؟", a: ["6", "5", "7", "4"], c: 0},
-            {q: "كم اجتماعاً استغرقت هذه اللعبة؟", a: ["أكثر من اللازم!", "واحد", "بالصدفة", "لم نتفق"], c: 0}
+            {q: "كم اجتماعاً استغرقت هذه اللعبة؟", a: ["أكثر من اللازم!", "واحد", "بالصدفة", "لم نتفق"], c: 0},
+            {q: "سؤال إضافي 1 (يمكنك تعديله لاحقاً)", a: ["خيار 1", "خيار 2", "خيار 3", "خيار 4"], c: 0},
+            {q: "سؤال إضافي 2 (يمكنك تعديله لاحقاً)", a: ["خيار 1", "خيار 2", "خيار 3", "خيار 4"], c: 0}
         ];
+
+        async function loadQuestions() {
+            if (!supabase || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') return;
+            try {
+                const { data, error } = await supabase.from('game_questions').select('*').order('id', { ascending: true });
+                if (data && data.length > 0) {
+                    dataSet = data.map(item => ({
+                        q: item.question,
+                        a: item.options,
+                        c: item.correct_index
+                    }));
+                }
+            } catch (err) {
+                console.error("Error fetching questions:", err);
+            }
+        }
+
+        // Load questions on start
+        loadQuestions();
 
         let score1 = 0, score2 = 0;
         let done = new Set();
@@ -128,7 +155,7 @@
             sd('s-map');
             const g = document.getElementById('grid-list');
             g.innerHTML = '';
-            for(let i=1; i<=14; i++) {
+            for(let i=1; i<=16; i++) {
                 const b = document.createElement('button');
                 b.className = 'q-button' + (done.has(i-1) ? ' disabled' : '');
                 b.textContent = i;
@@ -195,7 +222,7 @@
 
             setTimeout(() => {
                 m.style.display = 'none';
-                if(done.size === 14) {
+                if(done.size === 16) {
                     sd('s-win');
                     const r = score1 > score2 ? "فريق التخطيط فاز بالتحدي!" : (score2 > score1 ? "فريق المخاطر فاز بالتحدي!" : "تعادل الفريقان!");
                     document.getElementById('win-msg').textContent = r;
