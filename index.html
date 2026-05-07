@@ -113,7 +113,7 @@ body {
   border-left:1px solid rgba(94,207,204,.18);
 }
 
-.wheel-wrap { position:relative; width:300px; height:300px; }
+.wheel-wrap { position:relative; width:310px; height:310px; }
 
 .ptr {
   position:absolute; top:-26px; left:50%; transform:translateX(-50%);
@@ -122,21 +122,18 @@ body {
 
 .wheel-ring {
   position:absolute; inset:0; border-radius:50%;
-  border:9px solid var(--dark);
-  box-shadow:0 0 0 3px rgba(255,255,255,.8), 0 8px 28px rgba(0,0,0,.14);
+  border:10px solid #2d2d2d;
+  box-shadow:0 0 0 4px rgba(255,255,255,.9), 0 0 0 6px var(--teal), 0 6px 24px rgba(0,0,0,.12);
   pointer-events:none; z-index:5;
 }
-.wheel-ring::after {
-  content:''; position:absolute; inset:-3px; border-radius:50%;
-  border:2.5px solid var(--teal); opacity:.65;
-}
+
 
 .wheel-svg-wrap {
-  position:absolute; top:9px; left:9px;
-  width:282px; height:282px;
+  position:absolute; top:10px; left:10px;
+  width:290px; height:290px;
   border-radius:50%; overflow:hidden;
 }
-#wheelSVG { width:282px; height:282px; display:block; }
+#wheelSVG { width:290px; height:290px; display:block; }
 
 .wheel-hub {
   position:absolute; top:50%; left:50%;
@@ -298,8 +295,8 @@ body {
 
     <!-- Title (center) -->
     <div class="hdr-title">
-      <h1>التحدي الاستراتيجي</h1>
-      <p>SMO Gathering &mdash; May 2026</p>
+      <h1>SMO Gathering</h1>
+      <p>May 2026</p>
     </div>
 
     <!-- Music button -->
@@ -325,7 +322,7 @@ body {
         </div>
         <div class="wheel-ring"></div>
         <div class="wheel-svg-wrap">
-          <svg id="wheelSVG" viewBox="-141 -141 282 282" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg id="wheelSVG" viewBox="-145 -145 290 290" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="wheel-hub"></div>
       </div>
@@ -445,7 +442,7 @@ function buildWheel(){
   const svg=document.getElementById('wheelSVG'),n=employees.length,deg=360/n;
   svg.innerHTML='';
   employees.forEach((name,i)=>{
-    const a1=i*deg,a2=a1+deg,am=a1+deg/2,r=d=>d*Math.PI/180,R=138;
+    const a1=i*deg,a2=a1+deg,am=a1+deg/2,r=d=>d*Math.PI/180,R=142;
     const x1=R*Math.cos(r(a1)),y1=R*Math.sin(r(a1)),x2=R*Math.cos(r(a2)),y2=R*Math.sin(r(a2));
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('d',`M0,0 L${x1},${y1} A${R},${R} 0 ${deg>180?1:0},1 ${x2},${y2} Z`);
