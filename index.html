@@ -47,10 +47,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;
 .hdr-star{fill:var(--gold);opacity:.8;animation:rotateStar 20s linear infinite;}
 @keyframes rotateStar{to{transform:rotate(360deg);}}
 
-.music-btn{padding:6px 14px;background:var(--sepia);color:var(--parch);border:none;
-  border-radius:20px;font-size:.8rem;font-weight:700;font-family:'Tajawal',sans-serif;
-  cursor:pointer;letter-spacing:.5px;transition:.2s;}
-.music-btn:hover{background:var(--gold);}
+
 
 /* ── SCORE BAR ── */
 .score-bar{display:flex;align-items:center;padding:8px 16px;gap:8px;
@@ -228,11 +225,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;
 <!-- Background vintage stars -->
 <div class="bg-stars" id="bg-stars"></div>
 <div class="cf-wrap" id="confetti"></div>
-<audio id="bg-music" loop preload="auto">
-  <source src="https://assets.mixkit.co/music/preview/mixkit-inspiring-story-172.mp3" type="audio/mpeg">
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
-<!-- Applause / clapping for correct answer -->
+<!-- Sound effects only (no background music) -->
 <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2508/2508-preview.mp3" preload="auto"></audio>
 <audio id="snd-spin"    src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
 <audio id="snd-fail"    src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"  preload="auto"></audio>
@@ -260,7 +253,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;
         <polygon points="18,1 22,12 33,12 24,19 27,30 18,24 9,30 12,19 3,12 14,12" fill="#c9a84c" opacity=".5"/>
       </svg>
     </div>
-    <button class="music-btn" id="music-btn" onclick="toggleMusic()">♪ الموسيقى</button>
+
   </div>
 
   <!-- SCORE BAR -->
@@ -403,29 +396,6 @@ const SPIN_DUR=4500, MAX_PER_TEAM=8;
   }
 })();
 
-/* ── MUSIC ── */
-let musicOn=false,firstClick=false;
-const bgm=document.getElementById('bg-music');bgm.volume=0.22;
-
-function startMusic(){
-  if(!firstClick){
-    firstClick=true;musicOn=true;
-    bgm.play().then(()=>{
-      document.getElementById('music-btn').textContent='♪ إيقاف';
-      document.getElementById('music-btn').style.background='#5a3d00';
-    }).catch(()=>{});
-  }
-}
-// Start on ANY click
-document.addEventListener('click', startMusic, {once:true});
-
-function toggleMusic(){
-  firstClick=true;
-  musicOn=!musicOn;
-  const btn=document.getElementById('music-btn');
-  if(musicOn){bgm.play().catch(()=>{});btn.textContent='♪ إيقاف';btn.style.background='#5a3d00';}
-  else{bgm.pause();btn.textContent='♪ الموسيقى';btn.style.background='';}
-}
 
 /* ── RIPPLE ── */
 function addRipple(b,e){const r=document.createElement('span');r.className='ripple';const rc=b.getBoundingClientRect(),s=Math.max(rc.width,rc.height);r.style.width=r.style.height=s+'px';r.style.left=(e.clientX-rc.left-s/2)+'px';r.style.top=(e.clientY-rc.top-s/2)+'px';b.appendChild(r);setTimeout(()=>r.remove(),650);}
@@ -540,13 +510,9 @@ function checkAns(qi,chosen,el){
   ov.style.display='flex';
   const correct=(chosen===cor);
   if(correct){if(el)el.classList.add('correct');oic.className='ov-icon ok';osg.innerHTML='<polyline points="20 6 9 17 4 12"/>';
-    // Play applause sound
     const sc=document.getElementById('snd-correct');
     sc.currentTime=0; sc.volume=1;
     sc.play().catch(()=>{});
-    // Also briefly lower bg music for effect
-    bgm.volume=0.08;
-    setTimeout(()=>{bgm.volume=0.22;},2200);
     scores[currentTeam]++;updateScores();confetti();
   } else {
     if(el)el.classList.add('wrong');document.querySelectorAll('.opt')[cor]?.classList.add('correct');
