@@ -228,9 +228,13 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;
 <!-- Background vintage stars -->
 <div class="bg-stars" id="bg-stars"></div>
 <div class="cf-wrap" id="confetti"></div>
-<audio id="bg-music" loop preload="auto"><source src="https://assets.mixkit.co/music/preview/mixkit-inspiring-story-172.mp3" type="audio/mpeg"></audio>
+<audio id="bg-music" loop preload="auto">
+  <source src="https://assets.mixkit.co/music/preview/mixkit-inspiring-story-172.mp3" type="audio/mpeg">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+<!-- Applause / clapping for correct answer -->
+<audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2508/2508-preview.mp3" preload="auto"></audio>
 <audio id="snd-spin"    src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
-<audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
 <audio id="snd-fail"    src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"  preload="auto"></audio>
 
 <div class="card">
@@ -401,9 +405,27 @@ const SPIN_DUR=4500, MAX_PER_TEAM=8;
 
 /* ── MUSIC ── */
 let musicOn=false,firstClick=false;
-const bgm=document.getElementById('bg-music');bgm.volume=0.2;
-document.addEventListener('click',()=>{if(!firstClick){firstClick=true;musicOn=true;bgm.play().then(()=>{document.getElementById('music-btn').textContent='♪ متشغّل';}).catch(()=>{});}},{once:true});
-function toggleMusic(){musicOn=!musicOn;firstClick=true;if(musicOn){bgm.play().catch(()=>{});document.getElementById('music-btn').textContent='♪ متشغّل';}else{bgm.pause();document.getElementById('music-btn').textContent='♪ الموسيقى';}}
+const bgm=document.getElementById('bg-music');bgm.volume=0.22;
+
+function startMusic(){
+  if(!firstClick){
+    firstClick=true;musicOn=true;
+    bgm.play().then(()=>{
+      document.getElementById('music-btn').textContent='♪ إيقاف';
+      document.getElementById('music-btn').style.background='#5a3d00';
+    }).catch(()=>{});
+  }
+}
+// Start on ANY click
+document.addEventListener('click', startMusic, {once:true});
+
+function toggleMusic(){
+  firstClick=true;
+  musicOn=!musicOn;
+  const btn=document.getElementById('music-btn');
+  if(musicOn){bgm.play().catch(()=>{});btn.textContent='♪ إيقاف';btn.style.background='#5a3d00';}
+  else{bgm.pause();btn.textContent='♪ الموسيقى';btn.style.background='';}
+}
 
 /* ── RIPPLE ── */
 function addRipple(b,e){const r=document.createElement('span');r.className='ripple';const rc=b.getBoundingClientRect(),s=Math.max(rc.width,rc.height);r.style.width=r.style.height=s+'px';r.style.left=(e.clientX-rc.left-s/2)+'px';r.style.top=(e.clientY-rc.top-s/2)+'px';b.appendChild(r);setTimeout(()=>r.remove(),650);}
@@ -518,7 +540,13 @@ function checkAns(qi,chosen,el){
   ov.style.display='flex';
   const correct=(chosen===cor);
   if(correct){if(el)el.classList.add('correct');oic.className='ov-icon ok';osg.innerHTML='<polyline points="20 6 9 17 4 12"/>';
-    const sc=document.getElementById('snd-correct');sc.currentTime=0;sc.volume=1;sc.play().catch(()=>{});
+    // Play applause sound
+    const sc=document.getElementById('snd-correct');
+    sc.currentTime=0; sc.volume=1;
+    sc.play().catch(()=>{});
+    // Also briefly lower bg music for effect
+    bgm.volume=0.08;
+    setTimeout(()=>{bgm.volume=0.22;},2200);
     scores[currentTeam]++;updateScores();confetti();
   } else {
     if(el)el.classList.add('wrong');document.querySelectorAll('.opt')[cor]?.classList.add('correct');
